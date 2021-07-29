@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cat", "Cat\Cat.csproj", "{C1F9457C-A91D-4A4D-9F92-0CCE9E6377B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatTests", "CatTests\CatTests.csproj", "{BB7C8A19-A1AA-434C-8ECC-94DAB3FAF81C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1F9457C-A91D-4A4D-9F92-0CCE9E6377B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1F9457C-A91D-4A4D-9F92-0CCE9E6377B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1F9457C-A91D-4A4D-9F92-0CCE9E6377B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1F9457C-A91D-4A4D-9F92-0CCE9E6377B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB7C8A19-A1AA-434C-8ECC-94DAB3FAF81C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB7C8A19-A1AA-434C-8ECC-94DAB3FAF81C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB7C8A19-A1AA-434C-8ECC-94DAB3FAF81C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB7C8A19-A1AA-434C-8ECC-94DAB3FAF81C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
