@@ -10,18 +10,23 @@ namespace Cat.ast.rules
     {
         private static Dictionary<ITokenType, IRule> TokenRules = new();
 
-        //todo add caching
-        public static IRule Token(ITokenType tokenType) => TokenRules.ContainsKey(tokenType)
-            ? TokenRules[tokenType]
-            : new TokenRule(tokenType);
-        
+        public static IRule Token(ITokenType tokenType)
+        {
+            if (!TokenRules.ContainsKey(tokenType))
+            {
+                TokenRules[tokenType] = new TokenRule(tokenType);
+            }
+
+            return TokenRules[tokenType];
+        }
+
         //add new rules here
         //use Lazy if you write recursive rules
         
 
         public static IRule Literal = Reader
             .With(Chain
-                .StartWith(Token(TokenTypes.String))
+                .StartWith(Token(String))
                 .Collect(nodes => new StringNode(nodes[0] as TokenNode)))
             .With(Chain
                 .StartWith(Token(Number))
