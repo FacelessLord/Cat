@@ -4,7 +4,9 @@ pipeline: pipelineT OR pipeline | pipelineT;
 pipelineT: pipelineF AND pipelineT | pipelineF;
 pipelineF: LPAREN pipeline RPAREN | expression;
 
-expression: variableStmt | functionCall | literal | LPAREN expression RPAREN;
+expression: arithmeticExpression | variableStmt | functionCall | literal | LPAREN expression RPAREN;
+arithmeticExpression: 
+
 stringValuePair: ID COLON expression;
 
 expressionList: expression COMMA expressionList | expression;
@@ -43,6 +45,7 @@ HASH: "#";
 DOLLAR: "$";
 PERCENT: "%";
 CIRCUMFLEX: "^";
+NOTEQUAL: "!=";
 SET: "=";
 EQUALS: "==";
 

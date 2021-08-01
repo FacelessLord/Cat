@@ -17,20 +17,38 @@ namespace Cat.lexing.tokens
 
         #region operators
 
-        public static readonly ITokenType And = new SimpleTokenType(nameof(And), "&");
-        public static readonly ITokenType Or = new SimpleTokenType(nameof(Or), "|");
-        public static readonly ITokenType Plus = new SimpleTokenType(nameof(Plus), "+");
-        public static readonly ITokenType Minus = new SimpleTokenType(nameof(Minus), "-");
-        public static readonly ITokenType Star = new SimpleTokenType(nameof(Star), "*");
-        public static readonly ITokenType Divide = new SimpleTokenType(nameof(Divide), "/");
-        public static readonly ITokenType ExclamationMark = new SimpleTokenType(nameof(ExclamationMark), "!");
-        public static readonly ITokenType At = new SimpleTokenType(nameof(At), "@");
-        public static readonly ITokenType Hash = new SimpleTokenType(nameof(Hash), "#");
-        public static readonly ITokenType Dollar = new SimpleTokenType(nameof(Dollar), "$");
-        public static readonly ITokenType Percent = new SimpleTokenType(nameof(Percent), "%");
-        public static readonly ITokenType Circumflex = new SimpleTokenType(nameof(Circumflex), "^");
-        public static readonly ITokenType Set = new RepetitionVariantTokenType(nameof(Set), "=");
-        public static readonly ITokenType Equals = new RepetitionVariantTokenType(nameof(Equals), "==");
+        public static readonly ITokenType And = new OperatorTokenType(nameof(And), "&");
+        public static readonly ITokenType Or = new OperatorTokenType(nameof(Or), "|");
+        public static readonly ITokenType Plus = new OperatorTokenType(nameof(Plus), "+");
+        public static readonly ITokenType PlusEquals = new OperatorTokenType(nameof(PlusEquals), "+=");
+        public static readonly ITokenType Minus = new OperatorTokenType(nameof(Minus), "-");
+        public static readonly ITokenType MinusEquals = new OperatorTokenType(nameof(MinusEquals), "-=");
+        public static readonly ITokenType Star = new OperatorTokenType(nameof(Star), "*");
+        public static readonly ITokenType StarEquals = new OperatorTokenType(nameof(StarEquals), "*=");
+        public static readonly ITokenType Divide = new OperatorTokenType(nameof(Divide), "/");
+        public static readonly ITokenType DivideEquals = new OperatorTokenType(nameof(DivideEquals), "/=");
+        public static readonly ITokenType ExclamationMark = new OperatorTokenType(nameof(ExclamationMark), "!");
+
+        public static readonly ITokenType ExclamationMarkEquals =
+            new OperatorTokenType(nameof(ExclamationMarkEquals), "!=");
+
+        public static readonly ITokenType At = new OperatorTokenType(nameof(At), "@");
+        public static readonly ITokenType Hash = new OperatorTokenType(nameof(Hash), "#");
+        public static readonly ITokenType Dollar = new OperatorTokenType(nameof(Dollar), "$");
+        public static readonly ITokenType Percent = new OperatorTokenType(nameof(Percent), "%");
+        public static readonly ITokenType PercentEquals = new OperatorTokenType(nameof(PercentEquals), "%=");
+        public static readonly ITokenType Circumflex = new OperatorTokenType(nameof(Circumflex), "^");
+        public static readonly ITokenType CircumflexEquals = new OperatorTokenType(nameof(CircumflexEquals), "^=");
+        public static readonly ITokenType Set = new OperatorTokenType(nameof(Set), "=");
+        public static readonly ITokenType Equals = new OperatorTokenType(nameof(Equals), "==");
+        public static readonly ITokenType NotEquals = new OperatorTokenType(nameof(NotEquals), "!=");
+        public static readonly ITokenType Greater = new OperatorTokenType(nameof(Greater), ">");
+        public static readonly ITokenType GreaterOrEqual = new OperatorTokenType(nameof(GreaterOrEqual), ">=");
+        public static readonly ITokenType Less = new OperatorTokenType(nameof(Less), "<");
+        public static readonly ITokenType LessOrEqual = new OperatorTokenType(nameof(LessOrEqual), "<=");
+        public static readonly ITokenType QuestionMark = new OperatorTokenType(nameof(QuestionMark), "?");
+        public static readonly ITokenType QuestionMarkEquals = new OperatorTokenType(nameof(QuestionMarkEquals), "?=");
+        public static readonly ITokenType TwoQuestionMark = new OperatorTokenType(nameof(TwoQuestionMark), "??");
 
         #endregion
 
@@ -62,17 +80,14 @@ namespace Cat.lexing.tokens
         public static readonly ITokenType Unknown = new UnknownTokenType();
 
         public static Lazy<List<SimpleTokenType>> SingleTokenTypes = new(() => typeof(TokenTypes).GetFields()
-            .Where(m => m.Name != "Types")
             .Select(field => field.GetValue(null) as SimpleTokenType)
             .Where(value => value != null)
             .ToList());
 
-        public static Lazy<List<IGrouping<char, RepetitionVariantTokenType>>> RepeatedTokenTypes = new(() =>
+        public static Lazy<List<OperatorTokenType>> OperatorTokenTypes = new(() =>
             typeof(TokenTypes).GetFields()
-                .Where(m => m.Name != "Types")
-                .Select(field => field.GetValue(null) as RepetitionVariantTokenType)
+                .Select(field => field.GetValue(null) as OperatorTokenType)
                 .Where(value => value != null)
-                .GroupBy(t => t.Terminal[0])
                 .ToList());
     }
 }

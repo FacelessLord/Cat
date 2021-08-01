@@ -17,12 +17,11 @@ namespace Cat.lexing
             .Select(t => new SimpleTokenParser(t))
             .Concat(new List<IParser>
             {
+                new OperatorTokenParser(TokenTypes.OperatorTokenTypes.Value),
                 new StringParser(),
                 new NumberParser(),
                 new IdParser()
             })
-            .Concat(TokenTypes.RepeatedTokenTypes.Value
-                .Select(t => new RepeatedCharacterTokenParser(t.Key, t.ToArray())))
             .ToList();
 
         public IEnumerable<Token> ParseCode(string code)

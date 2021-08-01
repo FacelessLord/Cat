@@ -33,6 +33,19 @@
 
         public string Name { get; }
     }
+    
+    public class OperatorTokenType : ITokenType
+    {
+        public readonly string Terminal;
+
+        public OperatorTokenType(string name, string terminal)
+        {
+            Terminal = terminal;
+            Name = name;
+        }
+
+        public string Name { get; }
+    }
 
     public class KeyWordTokenType : SimpleTokenType
     {
