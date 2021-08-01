@@ -10,7 +10,7 @@ stringValuePair: ID COLON expression;
 expressionList: expression | expression COMMA expressionList;
 stringValuePairList: stringValuePair | stringValuePair COMMA stringValuePairList;
 
-variableStmt: LET ID | LET ID SET expression;
+variableStmt: LET ID | LET ID SET expression | LET ID SET LPAREN pipeline RPAREN;
 
 functionCall: ID LPAREN funcArgs RPAREN;
 funcArgs: expressionList;
@@ -33,6 +33,18 @@ DOUBLEQUOTE: "\"";
 #operators
 AND: "&";
 OR: "|";
+PLUS: "+";
+MINUS: "-";
+STAR: "*";
+DIVIDE: "/";
+EXCLAMATIONMARK: "!";
+AT: "@";
+HASH: "#";
+DOLLAR: "$";
+PERCENT: "%";
+CIRCUMFLEX: "^";
+SET: "=";
+EQUALS: "==";
 
 #parentheses
 LPAREN: "(";

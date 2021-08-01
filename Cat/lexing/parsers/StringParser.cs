@@ -1,5 +1,6 @@
 ﻿using System;
-using Cat.ast;
+using System.Text;
+using Cat.lexing.tokens;
 
 namespace Cat.lexing.parsers
 {
@@ -7,27 +8,32 @@ namespace Cat.lexing.parsers
     {
         public void Parse(in string text, Action<Token, int> tokenConsumer)
         {
-            if (!text.StartsWith('"') && !text.StartsWith('\''))
-                return;
-
             var escaped = false;
+            var valueBuilder = new StringBuilder();
+            var escapedCount = 0;
 
             for (int i = 1; i < text.Length; i++)
             {
                 if (escaped)
                 {
+                    valueBuilder.Append(text[i]);
                     escaped = false;
                     continue;
                 }
 
                 if (text[i] == '\"' || text[i] == '\'')
                 {
-                    var token = new Token(TokenTypes.@string, text[1..i]);
-                    tokenConsumer(token, i + 1);
+                    var value = valueBuilder.ToString();
+                    var token = new Token(TokenTypes.String, value);
+                    tokenConsumer(token, value.Length + 2+escapedCount);
                     return;
                 }
 
                 escaped = text[i] == '\\';
+                if (!escaped) //not adding backslash if it is used for escaping
+                    valueBuilder.Append(text[i]);
+                else
+                    escapedCount++;
             }
         }
 

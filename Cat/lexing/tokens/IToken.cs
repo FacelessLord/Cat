@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace Cat.ast
+namespace Cat.lexing.tokens
 {
     public class Token
     {

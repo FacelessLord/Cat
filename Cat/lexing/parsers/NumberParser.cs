@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cat.ast;
+using Cat.lexing.tokens;
 
 namespace Cat.lexing.parsers
 {
@@ -24,7 +24,7 @@ namespace Cat.lexing.parsers
                 {
                     if (foundDot || !char.IsDigit(text[i + 1]))
                     {
-                        var token = new Token(TokenTypes.number, text[0..i]);
+                        var token = new Token(TokenTypes.Number, text[0..i]);
                         tokenConsumer(token, i);
                         return;
                     }
@@ -36,12 +36,12 @@ namespace Cat.lexing.parsers
 
                 if (foundMinus && i == 1)
                     return;
-                var token2 = new Token(TokenTypes.number, text[0..i]);
+                var token2 = new Token(TokenTypes.Number, text[0..i]);
                 tokenConsumer(token2, i);
                 return;
             }
 
-            tokenConsumer(new Token(TokenTypes.number, text), text.Length);
+            tokenConsumer(new Token(TokenTypes.Number, text), text.Length);
         }
 
         public bool CanStartWith(char character)

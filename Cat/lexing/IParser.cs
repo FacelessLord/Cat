@@ -1,5 +1,5 @@
 ﻿using System;
-using Cat.ast;
+using Cat.lexing.tokens;
 
 namespace Cat.lexing
 {
