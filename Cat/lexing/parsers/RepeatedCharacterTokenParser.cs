@@ -26,6 +26,7 @@ namespace Cat.lexing.parsers
                 if (text[i] == _character)
                     continue;
                 tokenConsumer(new Token(GetTokenTypeByRepetitions(i), text[..i]), i);
+                break;
             }
         }
 

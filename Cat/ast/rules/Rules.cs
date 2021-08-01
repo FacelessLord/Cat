@@ -22,6 +22,26 @@ namespace Cat.ast.rules
 
         //add new rules here
         //use Lazy if you write recursive rules
+        public static IRule LetVarStatement = Reader
+            .With(Lazy(() => Chain
+                .StartWith(Token(Let))
+                .Then(Token(Id))
+                .Then(Token(Set))
+                .Then(Token(LParen))
+                .Then(Pipeline)
+                .Then(Token(RParen))
+                .Collect(nodes => new VariableStatementNode(new IdNode(nodes[1] as TokenNode), nodes[4]))))
+            .With(Lazy(() => Chain
+                .StartWith(Token(Let))
+                .Then(Token(Id))
+                .Then(Token(Set))
+                .Then(Expression)
+                .Collect(nodes => new VariableStatementNode(new IdNode(nodes[1] as TokenNode), nodes[3]))))
+            .With(Lazy(() => Chain
+                .StartWith(Token(Let))
+                .Then(Token(Id))
+                .Collect(nodes => new VariableStatementNode(new IdNode(nodes[1] as TokenNode)))));
+
         public static IRule ValuePair = Reader
             .With(Lazy(() => Chain
                 .StartWith(Expression)
@@ -71,7 +91,13 @@ namespace Cat.ast.rules
                 .Collect(nodes => new ObjectLiteralNode(nodes[1] as ValuePairListNode)));
 
         public static IRule Expression = Reader
-            .With(Chain.StartWith(Literal).Collect(nodes => nodes[0]));
+            .With(Chain.StartWith(Literal).Collect(nodes => nodes[0]))
+            .With(Chain.StartWith(LetVarStatement).Collect(nodes => nodes[0]))
+            .With(Lazy(() => Chain
+                .StartWith(Token(LParen))
+                .Then(Expression)
+                .Then(Token(RParen))
+                .Collect(nodes => nodes[1])));
 
         public static IRule PipelineF = Reader
             .With(Lazy(() => Chain

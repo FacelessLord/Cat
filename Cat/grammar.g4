@@ -4,7 +4,7 @@ pipeline: pipelineT OR pipeline | pipelineT;
 pipelineT: pipelineF AND pipelineT | pipelineF;
 pipelineF: LPAREN pipeline RPAREN | expression;
 
-expression: variableStmt | functionCall | literal;
+expression: variableStmt | functionCall | literal | LPAREN expression RPAREN;
 stringValuePair: ID COLON expression;
 
 expressionList: expression COMMA expressionList | expression;

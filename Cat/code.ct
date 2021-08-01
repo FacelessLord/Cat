@@ -1,1 +1,1 @@
-﻿[123123, 21, '3',"23", testVar]
+﻿let testVar = "124" & let a = [123123, 21, '3',"23", testVar] & let b = a

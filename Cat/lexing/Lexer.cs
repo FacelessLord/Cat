@@ -13,14 +13,14 @@ namespace Cat.lexing
 
     public class Lexer : ILexer
     {
-        private List<IParser> _parsers = new List<IParser>()
+        private List<IParser> _parsers = TokenTypes.SingleTokenTypes.Value
+            .Select(t => new SimpleTokenParser(t))
+            .Concat(new List<IParser>
             {
                 new StringParser(),
                 new NumberParser(),
                 new IdParser()
-            }
-            .Concat(TokenTypes.SingleTokenTypes.Value
-                .Select(t => new SimpleTokenParser(t)))
+            })
             .Concat(TokenTypes.RepeatedTokenTypes.Value
                 .Select(t => new RepeatedCharacterTokenParser(t.Key, t.ToArray())))
             .ToList();

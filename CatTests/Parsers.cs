@@ -14,7 +14,17 @@ namespace CatTests
     {
         private static Lazy<Lexer> lexer = new(() => new Lexer());
         private static Lazy<Parser> parser = new(() => new Parser());
+        
+        [Test]
+        public void ParserParses_MostSimplePipeline()
+        {
+            var code = "2";
+            var tokens = lexer.Value.ParseCode(code);
+            var node = parser.Value.TryParse(Rules.FunctionBody, Parser.OnError, tokens);
 
+            node.Should().BeOfType<NumberNode>();
+        }
+        
         [Test]
         public void ParserParses_SimplePipeline()
         {
@@ -109,6 +119,70 @@ namespace CatTests
             var objLit2 = (ObjectLiteralNode) objLit1.PairsList.Nodes[0].Expression;
             objLit2.PairsList.Nodes[0].Id.Should().BeOfType<IdNode>();
             objLit2.PairsList.Nodes[0].Expression.Should().BeOfType<StringNode>();
+        }
+
+        [Test]
+        public void ParserParses_VariableDefinition()
+        {
+            var code = "let c";
+
+            var tokens = lexer.Value.ParseCode(code).ToList();
+            var node = parser.Value.TryParse(Rules.LetVarStatement, Parser.OnError, tokens);
+
+            node.Should().BeOfType<VariableStatementNode>();
+            var variableNode = (VariableStatementNode) node;
+            variableNode.Id.Should().BeOfType<IdNode>();
+            variableNode.ExpressionNode.Should().BeNull();
+        }
+        
+        [Test]
+        public void ParserParses_VariableDefinitionWithValueSet()
+        {
+            var code = "( let c = 2 )";
+
+            var tokens = lexer.Value.ParseCode(code).ToList();
+            var node = parser.Value.TryParse(Rules.Expression, Parser.OnError, tokens);
+
+            node.Should().BeOfType<VariableStatementNode>();
+            var variableNode = (VariableStatementNode) node;
+            variableNode.Id.Should().BeOfType<IdNode>();
+            variableNode.ExpressionNode.Should().BeOfType<NumberNode>();
+        }
+        
+        [Test]
+        public void ParserParses_VariableDefinitionWithValueSetByPipeline()
+        {
+            var code = "( let c = 2 )";
+
+            var tokens = lexer.Value.ParseCode(code).ToList();
+            var node = parser.Value.TryParse(Rules.Expression, Parser.OnError, tokens);
+
+            node.Should().BeOfType<VariableStatementNode>();
+            var variableNode = (VariableStatementNode) node;
+            variableNode.Id.Should().BeOfType<IdNode>();
+            variableNode.ExpressionNode.Should().BeOfType<NumberNode>();
+        }
+        
+        [Test]
+        public void ParserParses_HardThing_VariableDefinitionWithValueSetByObjectInPipeline()
+        {
+            var code = "let c = ( { a: { L: let a = ({d: 3}) }, d: [{i: \"2\"}] } | [0] )";
+
+            var tokens = lexer.Value.ParseCode(code).ToList();
+            var node = parser.Value.TryParse(Rules.LetVarStatement, Parser.OnError, tokens);
+
+            node.Should().BeOfType<VariableStatementNode>();
+        }
+        
+        [Test]
+        public void ParserParses_ObjectWithParentheses()
+        {
+            var code = "{ L: ( 2 ) }";
+
+            var tokens = lexer.Value.ParseCode(code).ToList();
+            var node = parser.Value.TryParse(Rules.Pipeline, Parser.OnError, tokens);
+
+            node.Should().BeOfType<ObjectLiteralNode>();
         }
     }
 }
