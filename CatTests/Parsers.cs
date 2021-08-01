@@ -20,7 +20,7 @@ namespace CatTests
         {
             var code = "\"1\" | 124 & '12'";
             var tokens = lexer.Value.ParseCode(code);
-            var node = parser.Value.TryParse(Contexts.FunctionBody, Parser.OnError, tokens);
+            var node = parser.Value.TryParse(Rules.FunctionBody, Parser.OnError, tokens);
 
             node.Should().BeOfType<PipelineOrNode>();
             var pipelineOrNode = (PipelineOrNode)node;

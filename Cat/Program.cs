@@ -18,7 +18,7 @@ namespace Cat
             var code = string.Join("", File.ReadLines("./code.ct"));
 
             var tokens = lexer.ParseCode(code).ToList();
-            var node = parser.TryParse(Contexts.FunctionBody, Parser.OnError, tokens);
+            var node = parser.TryParse(Rules.FunctionBody, Parser.OnError, tokens);
             var a = 0;
         }
     }

@@ -2,7 +2,7 @@
 
 pipeline: pipelineT OR pipeline | pipelineT;
 pipelineT: pipelineF AND pipelineT | pipelineF;
-pipelineF: LPAREN pipeline RPAREN | expression | LAMBDA;
+pipelineF: LPAREN pipeline RPAREN | expression;
 
 expression: variableStmt | functionCall | literal;
 stringValuePair: ID COLON expression;

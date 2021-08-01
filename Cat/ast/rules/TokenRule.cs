@@ -5,7 +5,7 @@ using Cat.lexing.tokens;
 
 namespace Cat.ast.rules
 {
-    public class TokenRule : IContext
+    public class TokenRule : IRule
     {
         private readonly ITokenType _type;
 
@@ -14,7 +14,7 @@ namespace Cat.ast.rules
             _type = type;
         }
 
-        public bool TryParse(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode result)
+        public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode result)
         {
             var depth = tokens.PushPointer();
             foreach (var token in tokens)

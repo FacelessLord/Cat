@@ -8,10 +8,10 @@ namespace Cat.ast
 {
     public class Parser
     {
-        public INode TryParse(IContext MainRule, Action<Token, string> onError, IEnumerable<Token> tokens)
+        public INode TryParse(IRule MainRule, Action<Token, string> onError, IEnumerable<Token> tokens)
         {
             var tokenBuffer = new BufferedEnumerable<Token>(tokens);
-            if (MainRule.TryParse(tokenBuffer, onError, out var result))
+            if (MainRule.TryRead(tokenBuffer, onError, out var result))
             {
                 return result;
             }

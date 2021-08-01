@@ -6,9 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Resource Include="code.ct">
+      <Content Include="code.ct">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Resource>
+      </Content>
     </ItemGroup>
 
 </Project>
