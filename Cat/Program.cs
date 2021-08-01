@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Cat.ast;
+using Cat.ast.nodes;
 using Cat.ast.rules;
 using Cat.lexing;
 
@@ -18,7 +20,9 @@ namespace Cat
             var code = string.Join("", File.ReadLines("./code.ct"));
 
             var tokens = lexer.ParseCode(code).ToList();
-            var node = parser.TryParse(Rules.FunctionBody, Parser.OnError, tokens);
+            var node = parser.TryParse(Rules.Literal, Parser.OnError, tokens);
+            
+            //todo add json serializer for nodes
             var a = 0;
         }
     }

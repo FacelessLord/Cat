@@ -4,7 +4,7 @@ namespace Cat.ast.nodes
 {
     public class TokenNode : INode
     {
-        public readonly Token Token;
+        public Token Token { get; }
 
         public TokenNode(Token token)
         {

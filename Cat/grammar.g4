@@ -7,7 +7,7 @@ pipelineF: LPAREN pipeline RPAREN | expression;
 expression: variableStmt | functionCall | literal;
 stringValuePair: ID COLON expression;
 
-expressionList: expression | expression COMMA expressionList;
+expressionList: expression COMMA expressionList | expression;
 stringValuePairList: stringValuePair | stringValuePair COMMA stringValuePairList;
 
 variableStmt: LET ID | LET ID SET expression | LET ID SET LPAREN pipeline RPAREN;
@@ -15,7 +15,7 @@ variableStmt: LET ID | LET ID SET expression | LET ID SET LPAREN pipeline RPAREN
 functionCall: ID LPAREN funcArgs RPAREN;
 funcArgs: expressionList;
 
-literal: stringLiteral | numberLiteral | listLiteral | objectLiteral;
+literal: stringLiteral | numberLiteral | listLiteral | objectLiteral | ID;
 stringLiteral: STRINGLITERAL;
 numberLiteral: NUMBERLITERAL;
 listLiteral: LBRACKET expressionList RBRACKET;

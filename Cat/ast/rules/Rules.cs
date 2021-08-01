@@ -22,7 +22,32 @@ namespace Cat.ast.rules
 
         //add new rules here
         //use Lazy if you write recursive rules
-        
+        public static IRule ValuePair = Reader
+            .With(Lazy(() => Chain
+                .StartWith(Expression)
+                .Then(Token(Colon))
+                .Then(Expression)
+                .Collect(nodes => new ValuePairNode(nodes[0], nodes[2]))));
+
+        public static IRule ValuePairList = Reader
+            .With(Lazy(() => Chain
+                .StartWith(ValuePair)
+                .Then(Token(Comma))
+                .Then(ValuePairList)
+                .Collect(nodes => new ValuePairListNode(nodes[0] as ValuePairNode, nodes[2] as ValuePairListNode))))
+            .With(Lazy(() => Chain
+                .StartWith(ValuePair)
+                .Collect(nodes => new ValuePairListNode(nodes[0] as ValuePairNode))));
+
+        public static IRule ExpressionList = Reader
+            .With(Lazy(() => Chain
+                .StartWith(Expression)
+                .Then(Token(Comma))
+                .Then(ExpressionList)
+                .Collect(nodes => new ExpressionListNode(nodes[0], nodes[2]))))
+            .With(Lazy(() => Chain
+                .StartWith(Expression)
+                .Collect(nodes => new ExpressionListNode(nodes[0]))));
 
         public static IRule Literal = Reader
             .With(Chain
@@ -30,7 +55,20 @@ namespace Cat.ast.rules
                 .Collect(nodes => new StringNode(nodes[0] as TokenNode)))
             .With(Chain
                 .StartWith(Token(Number))
-                .Collect(nodes => new NumberNode(nodes[0] as TokenNode)));
+                .Collect(nodes => new NumberNode(nodes[0] as TokenNode)))
+            .With(Chain
+                .StartWith(Token(Id))
+                .Collect(nodes => new IdNode(nodes[0] as TokenNode)))
+            .With(Chain
+                .StartWith(Token(LBracket))
+                .Then(ExpressionList)
+                .Then(Token(RBracket))
+                .Collect(nodes => new ListNode(nodes[1] as ExpressionListNode)))
+            .With(Chain
+                .StartWith(Token(LBrace))
+                .Then(ValuePairList)
+                .Then(Token(RBrace))
+                .Collect(nodes => new ObjectLiteralNode(nodes[1] as ValuePairListNode)));
 
         public static IRule Expression = Reader
             .With(Chain.StartWith(Literal).Collect(nodes => nodes[0]));

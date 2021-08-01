@@ -2,11 +2,11 @@
 {
     public class ExpressionNode : INode
     {
-        private readonly INode _expression;
+        public INode Expression { get; }
 
         public ExpressionNode(INode expression)
         {
-            _expression = expression;
+            Expression = expression;
         }
     }
 }

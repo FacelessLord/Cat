@@ -128,6 +128,7 @@ namespace CatTests
         [TestCase(" aaaaaa", TestName = "start with space")]
         [TestCase("123aaaaaa", TestName = "one word starting with digits")]
         [TestCase(" affsas", TestName = "start with space")]
+        [TestCase("affsas:", TestName = "with colon")]
         public void IdParser_DoesntParseIds(string value)
         {
             var parser = idParser.Value;
@@ -135,7 +136,7 @@ namespace CatTests
 
             var Consumer = A.Fake<Action<Token, int>>();
 
-            parser.Parse(value, Consumer);
+            parser.Parse(value, DebugConsumer);
 
             A.CallTo(Consumer)
                 .WhenArgumentsMatch(f => f[0].Equals(expectedToken) && f[1].Equals(value.Length))

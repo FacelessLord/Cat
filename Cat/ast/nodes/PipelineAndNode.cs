@@ -2,8 +2,8 @@
 {
     public class PipelineAndNode : PipelineNode
     {
-        public readonly INode A;
-        public readonly INode B;
+        public INode A { get; }
+        public INode B { get; }
 
         public PipelineAndNode(INode a, INode b)
         {

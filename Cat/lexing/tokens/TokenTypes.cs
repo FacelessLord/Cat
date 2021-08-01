@@ -10,7 +10,7 @@ namespace Cat.lexing.tokens
         #region control characters
 
         public static readonly ITokenType Semicolon = new SimpleTokenType(nameof(Semicolon), ";");
-        public static readonly ITokenType Colon = new SimpleTokenType(nameof(Colon), ";");
+        public static readonly ITokenType Colon = new SimpleTokenType(nameof(Colon), ":");
         public static readonly ITokenType Comma = new SimpleTokenType(nameof(Comma), ",");
 
         #endregion
