@@ -17,8 +17,10 @@ namespace Cat.lexing.tokens
 
         #region operators
 
-        public static readonly ITokenType And = new OperatorTokenType(nameof(And), "&");
-        public static readonly ITokenType Or = new OperatorTokenType(nameof(Or), "|");
+        public static readonly ITokenType PipelineAnd = new OperatorTokenType(nameof(PipelineAnd), "&");
+        public static readonly ITokenType PipelineOr = new OperatorTokenType(nameof(PipelineOr), "|");
+        public static readonly ITokenType And = new OperatorTokenType(nameof(And), "and");
+        public static readonly ITokenType Or = new OperatorTokenType(nameof(Or), "or");
         public static readonly ITokenType Plus = new OperatorTokenType(nameof(Plus), "+");
         public static readonly ITokenType PlusEquals = new OperatorTokenType(nameof(PlusEquals), "+=");
         public static readonly ITokenType Minus = new OperatorTokenType(nameof(Minus), "-");
@@ -28,10 +30,6 @@ namespace Cat.lexing.tokens
         public static readonly ITokenType Divide = new OperatorTokenType(nameof(Divide), "/");
         public static readonly ITokenType DivideEquals = new OperatorTokenType(nameof(DivideEquals), "/=");
         public static readonly ITokenType ExclamationMark = new OperatorTokenType(nameof(ExclamationMark), "!");
-
-        public static readonly ITokenType ExclamationMarkEquals =
-            new OperatorTokenType(nameof(ExclamationMarkEquals), "!=");
-
         public static readonly ITokenType At = new OperatorTokenType(nameof(At), "@");
         public static readonly ITokenType Hash = new OperatorTokenType(nameof(Hash), "#");
         public static readonly ITokenType Dollar = new OperatorTokenType(nameof(Dollar), "$");
@@ -50,6 +48,7 @@ namespace Cat.lexing.tokens
         public static readonly ITokenType QuestionMarkEquals = new OperatorTokenType(nameof(QuestionMarkEquals), "?=");
         public static readonly ITokenType TwoQuestionMark = new OperatorTokenType(nameof(TwoQuestionMark), "??");
 
+        //todo move every SimpleTokenType to OperatorTokenType
         #endregion
 
         #region parentheses

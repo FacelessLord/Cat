@@ -15,10 +15,6 @@ namespace CatTests
         public Lazy<IdParser> idParser = new(() => new IdParser());
 
         //todo
-        public Lazy<RepeatedCharacterTokenParser> repeatedCharacterTokenParser(char character,
-            RepetitionVariantTokenType[] types) =>
-            new(() => new RepeatedCharacterTokenParser(character, types));
-
         public Lazy<SimpleTokenParser> simpleTokenParser(SimpleTokenType token) => 
             new(() => new SimpleTokenParser(token));
 

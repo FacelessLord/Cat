@@ -24,7 +24,7 @@ namespace Cat.lexing.parsers
             int i;
             for (i = 0; i < text.Length; i++)
             {
-                foreach (var operatorToken in _operators)
+                foreach (var operatorToken in preOperator)
                 {
                     if (operatorToken.Terminal.Length <= i)
                     {
@@ -54,7 +54,7 @@ namespace Cat.lexing.parsers
             }
 
             if (dOperatorTooShort.Count > 1)
-                throw new AmbiguousMatchException("Can't decide which token to take from \"" + text[1..10] + "\"");
+                throw new AmbiguousMatchException("Can't decide which token to take from \"" + text[..(Math.Min(10, text.Length))] + "\"");
         }
 
         public bool CanStartWith(char character)

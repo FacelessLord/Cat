@@ -20,8 +20,9 @@ namespace Cat
             var code = string.Join("", File.ReadLines("./code.ct"));
 
             var tokens = lexer.ParseCode(code).ToList();
-            var node = parser.TryParse(Rules.FunctionBody, Parser.OnError, tokens);
+            var node = parser.TryParse(Rules.Expression, Parser.OnError, tokens);
             
+            //todo create fluent to make operatorRules
             //todo add json serializer for nodes
             var a = 0;
         }

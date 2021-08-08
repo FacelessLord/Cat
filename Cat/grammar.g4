@@ -4,8 +4,36 @@ pipeline: pipelineT OR pipeline | pipelineT;
 pipelineT: pipelineF AND pipelineT | pipelineF;
 pipelineF: LPAREN pipeline RPAREN | expression;
 
-expression: arithmeticExpression | variableStmt | functionCall | literal | LPAREN expression RPAREN;
-arithmeticExpression: 
+expression: arithmeticExpression;
+simpleExpression: variableStmt | functionCall | literal | LPAREN expression RPAREN
+
+arithmeticExpression: arithmeticExpressionOr OR arithmeticExpressionStar
+    | arithmeticExpressionOr;
+arithmeticExpressionOr: arithmeticExpressionAnd AND arithmeticExpressionAnd
+    | arithmeticExpressionAnd;
+arithmeticExpressionAnd: arithmeticExpressionEquals EQUALS arithmeticExpressionAnd
+    | arithmeticExpressionEquals NOTEQUALS arithmeticExpressionAnd
+    | arithmeticExpressionEquals;
+arithmeticExpressionEquals: arithmeticExpressionPercent PERCENT arithmeticExpressionEquals
+    | arithmeticExpressionPercent;
+arithmeticExpressionPercent: arithmeticExpressionPlus PLUS arithmeticExpressionPercent 
+    | arithmeticExpressionPlus MINUS arithmeticExpressionPercent 
+    | arithmeticExpressionPlus;
+arithmeticExpressionPlus: arithmeticExpressionStar STAR arithmeticExpressionPlus
+    | arithmeticExpressionStar DIVIDE arithmeticExpressionPlus
+    | arithmeticExpressionStar;
+arithmeticExpressionStar: arithmeticExpressionAt AT arithmeticExpressionStar
+    | arithmeticExpressionAt;
+arithmeticExpressionAt: arithmeticExpressionHash HASH arithmeticExpressionAt
+    | arithmeticExpressionHash;
+arithmeticExpressionHash: arithmeticExpressionCircumflex CIRCUMFLEX arithmeticExpressionHash
+    | arithmeticExpressionCircumflex;
+arithmeticExpressionCircumflex: EXCLAMATIONMARK arithmeticExpressionExclamationMark
+    | arithmeticExpressionExclamationMark;
+arithmeticExpressionExclamationMark: PLUS arithmeticExpressionExclamationMark
+    | arithmeticExpressionExclamationMark;
+arithmeticExpressionExclamationMark: LPAREN arithmeticExpression RPAREN 
+    | simpleExpression;
 
 stringValuePair: ID COLON expression;
 
@@ -33,8 +61,10 @@ APOSTROPHE: "'";
 DOUBLEQUOTE: "\"";
 
 #operators
-AND: "&";
-OR: "|";
+PIPELINEAND: "&";
+PIPELINEOR: "|";
+AND: "and";
+OR: "or";
 PLUS: "+";
 MINUS: "-";
 STAR: "*";

@@ -11,27 +11,49 @@ namespace Cat.ast.api
         public static ChainStarter Chain => new();
         public static LazyChain Lazy(Func<IRuleChain> chain) => new(chain);
 
-        public static RuleReader Reader => RuleReader.Create();
+        public static ReaderNamingConfig Reader=> new ();
+    }
+
+    public class ReaderNamingConfig{
+        
+        internal ReaderNamingConfig(){}
+        public RuleReader Named(string name) => RuleReader.Create(name);
     }
 
     public class RuleReader : IRule
     {
-        public static RuleReader Create() => new();
-        private readonly List<IRuleChain> _chains;
+        public string Name { get; private set; }
+        public static RuleReader Create(string name) => new(name);
+        private List<IRuleChain> _chains;
 
-        private RuleReader()
+        private RuleReader(string name)
         {
+            Name = name;
             _chains = new List<IRuleChain>();
+        }
+
+        internal void FillFrom(RuleReader reader)
+        {
+            Name = reader.Name;
+            _chains = reader._chains;
         }
 
         private RuleReader(RuleReader reader, IRuleChain parser)
         {
+            Name = reader.Name;
             _chains = new List<IRuleChain>(reader._chains) {parser};
         }
 
         public RuleReader With(IRuleChain chain)
         {
-            return new(this, chain);
+            _chains.Add(chain);
+            return this;
+        }
+        
+        public RuleReader With(Func<RuleReader, IRuleChain> chain)
+        {
+            _chains.Add(chain(this));
+            return this;
         }
 
         public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode node)
@@ -52,6 +74,11 @@ namespace Cat.ast.api
             tokens.ResetPointer();
 
             return false;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 
@@ -76,12 +103,12 @@ namespace Cat.ast.api
             return new(this, rule);
         }
 
-        public RuleChain Collect(Func<INode[], INode> collector)
+        public RuleChain CollectBy(Func<INode[], INode> collector)
         {
             return new RuleChain(_rules, collector);
         }
     }
-
+    
     public interface IRuleChain
     {
         public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode collectedNode);

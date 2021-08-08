@@ -1,1 +1,1 @@
-﻿let testVar = "124" & let a = [123123, 21, '3',"23", testVar] & let b = a
+﻿1 == 1 or 2 != 3
