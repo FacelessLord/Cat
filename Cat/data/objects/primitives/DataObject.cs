@@ -42,7 +42,7 @@ namespace Cat.data.objects.primitives
             var propertyValue = PropertyValues[dataProperty.Name];
             if (propertyValue is ICallableDataObject callable)
                 return callable.Call(args);
-            throw new CatIllegalAccessException(AccessRight.Call, Type, dataProperty);
+            throw new CatIllegalPropertyAccessException(AccessRight.Call, Type, dataProperty);
         }
     }
 }

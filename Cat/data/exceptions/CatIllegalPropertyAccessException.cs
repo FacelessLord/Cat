@@ -5,9 +5,9 @@ using Cat.data.types.api;
 
 namespace Cat.data.exceptions
 {
-    public class CatIllegalAccessException : Exception
+    public class CatIllegalPropertyAccessException : Exception
     {
-        public CatIllegalAccessException(AccessRight accessRight, IDataType ownerType, IDataProperty propertyToAccess) :
+        public CatIllegalPropertyAccessException(AccessRight accessRight, IDataType ownerType, IDataProperty propertyToAccess) :
             base($"Cannot {AccessRightHelper.AccessRightToString(accessRight)} " +
                  $"property \"{propertyToAccess.Name}\" of type {ownerType.FullName}")
         {

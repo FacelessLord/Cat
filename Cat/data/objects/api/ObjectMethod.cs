@@ -26,7 +26,7 @@ namespace Cat.data.objects.api
         {
             if ((AccessRights & AccessRight.Read) != 0)
                 return owner.GetProperty(this);
-            throw new CatIllegalAccessException(AccessRight.Read, DeclaringType, this);
+            throw new CatIllegalPropertyAccessException(AccessRight.Read, DeclaringType, this);
         }
 
         public bool HasValue(IDataObject owner)
@@ -38,14 +38,14 @@ namespace Cat.data.objects.api
         {
             if ((AccessRights & AccessRight.Write) != 0)
                 owner.SetProperty(this, value);
-            throw new CatIllegalAccessException(AccessRight.Write, DeclaringType, this);
+            throw new CatIllegalPropertyAccessException(AccessRight.Write, DeclaringType, this);
         }
 
         public void CallValue(IDataObject owner, params IDataObject[] args)
         {
             if ((AccessRights & AccessRight.Call) != 0)
                 owner.CallProperty(this, args);
-            throw new CatIllegalAccessException(AccessRight.Call, DeclaringType, this);
+            throw new CatIllegalPropertyAccessException(AccessRight.Call, DeclaringType, this);
         }
 
         public void SetDeclaringType(IDataType type)
