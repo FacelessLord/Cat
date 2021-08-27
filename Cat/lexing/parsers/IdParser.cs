@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Cat.lexing.tokens;
 
 namespace Cat.lexing.parsers

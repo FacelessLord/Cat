@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cat.ast.api;
-using Cat.ast.rules;
 using Cat.lexing.tokens;
 
 namespace Cat.ast

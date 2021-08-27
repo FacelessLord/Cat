@@ -6,7 +6,6 @@ using Cat.lexing.tokens;
 using static Cat.ast.api.RuleHelper;
 using static Cat.ast.rules.Rules;
 using static Cat.lexing.tokens.TokenTypes;
-using Token = Cat.lexing.tokens.Token;
 
 namespace Cat.ast.rules
 {

@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text.Json;
 using Cat.ast;
-using Cat.ast.nodes;
 using Cat.ast.rules;
 using Cat.lexing;
 

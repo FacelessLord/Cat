@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Cat.data.types;
+﻿using System.Collections.Generic;
+using Cat.data.types.api;
 
 namespace Cat.data.exceptions
 {
-    public class CatTypeInstantiationException : Exception
+    public class CatTypeInstantiationException : CatTypeException
     {
-        public CatTypeInstantiationException(DataType type, IEnumerable<string> missedMembers) :
-            base($"Type {type.FullName} requires {string.Join(", ", missedMembers)} members to be implemented")
+        public CatTypeInstantiationException(IDataType type, IEnumerable<string> missedPropertys) :
+            base($"Type {type.FullName} requires {string.Join(", ", missedPropertys)} properties to be implemented")
         {
         }
     }

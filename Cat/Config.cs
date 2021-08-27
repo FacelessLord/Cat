@@ -2,6 +2,6 @@
 {
     public static class Config
     {
-        public static bool IsStrongTypingEnabled = false;
+        public static bool IsStrictTypingEnabled = false;
     }
 }

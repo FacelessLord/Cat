@@ -1,0 +1,4 @@
+### ToDo
+* NumberType
+* BoolType
+* Interpreting literals as DataObjects
