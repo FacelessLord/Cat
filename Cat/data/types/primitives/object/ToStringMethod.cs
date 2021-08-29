@@ -1,18 +1,17 @@
-﻿using System.Linq;
-using Cat.data.objects;
+﻿using System;
+using System.Linq;
 using Cat.data.objects.api;
-using Cat.data.properties;
-using Cat.data.types.primitives.@string;
+using Cat.data.objects.primitives;
 
 namespace Cat.data.types.primitives.@object
 {
     public class ToStringMethod : ObjectMethod
     {
-        private readonly TypeStorage _types;
+        private readonly ITypeStorage _types;
 
-        public ToStringMethod(TypeStorage types) : base(
+        public ToStringMethod(ITypeStorage types) : base(
             types.Function(types[Primitives.Object], types[Primitives.String]),
-            "toString", new PropertyMeta(true))
+            "toString")
         {
             _types = types;
         }
@@ -20,11 +19,23 @@ namespace Cat.data.types.primitives.@object
         public override IDataObject Call(IDataObject[] args)
         {
             var internals = string.Join(",",
-                args[0].Type.Properties
-                    .Where(p => p.HasValue(args[0]))
-                    .Select(p => p.GetValue(args[0]))
-                    .Select(o => o.Type.GetProperty(Name, Meta)));
+                args[0].Properties
+                    .Select(kvp => $"{kvp.Key} : {Stringify(kvp.Value)}"));
             return _types[Primitives.String].CreateInstance($"{args[0].Type} {{{internals}}}");
+        }
+
+        private string Stringify(IDataObject dataObject)
+        {
+            if (dataObject.HasProperty(Name))
+            {
+                var toStringResult = dataObject.CallProperty(Name, Array.Empty<IDataObject>());
+                if (toStringResult is StringDataObject s)
+                {
+                    return s.Value;
+                }
+            }
+
+            return (Call(new[] { dataObject }) as StringDataObject)!.Value;
         }
     }
 }

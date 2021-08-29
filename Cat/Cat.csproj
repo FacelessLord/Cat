@@ -15,4 +15,8 @@
       <Folder Include="data\types\primitives\object\methods" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CatDi\CatDi.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Cat.data.objects.api;
-using Cat.data.properties;
 using Cat.data.properties.api;
 
 namespace Cat.data.types.api
@@ -16,8 +15,8 @@ namespace Cat.data.types.api
 
         public bool IsEquivalentTo(IDataType type);
 
-        public IEnumerable<IDataProperty> GetProperty(string name, PropertyMeta meta);
-        public bool HasProperty(string name, PropertyMeta meta);
+        public IDataProperty GetProperty(string name);
+        public bool HasProperty(string name);
 
         public void PopulateObject(IDataObject dataObject);
         public IDataObject CreateInstance(params object[] args);

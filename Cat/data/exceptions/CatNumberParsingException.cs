@@ -1,7 +1,4 @@
 ﻿using System;
-using Cat.data.properties;
-using Cat.data.properties.api;
-using Cat.data.types.api;
 
 namespace Cat.data.exceptions
 {

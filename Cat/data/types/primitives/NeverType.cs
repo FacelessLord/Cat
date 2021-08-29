@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Cat.data.properties;
 using Cat.data.properties.api;
 using Cat.data.types.api;
 using Cat.data.types.primitives.@object;
@@ -9,7 +8,7 @@ namespace Cat.data.types.primitives
     public class NeverType : ObjectType
     {
         private const string TypeName = "Never";
-        private const string TypeFullName = TypesPaths.System + TypeName;
+        private const string TypeFullName = TypesPaths.System + "." + TypeName;
 
         public NeverType(TypeStorage types) : base(types)
         {

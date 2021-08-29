@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Cat.data.properties.api;
+﻿using System.Linq;
 using Cat.data.types.api;
 using Cat.data.types.primitives.@object;
 

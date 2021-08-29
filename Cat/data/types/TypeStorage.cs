@@ -4,6 +4,8 @@ using System.Linq;
 using Cat.data.exceptions;
 using Cat.data.types.api;
 using Cat.data.types.primitives;
+using Cat.data.types.primitives.@bool;
+using Cat.data.types.primitives.number;
 using Cat.data.types.primitives.@object;
 using Cat.data.types.primitives.@string;
 
@@ -19,23 +21,26 @@ namespace Cat.data.types
 
         public IDataType Union(IDataType a, IDataType b);
         public IDataType Function(params IDataType[] args);
+
+
+        public IDataType this[string fullName] { get; }
     }
 
     public class TypeStorage : ITypeStorage
     {
-        public static TypeStorage Instance = new TypeStorage();
-        public Dictionary<string, IDataType> Types;
+        public Dictionary<string, IDataType> Types = new();
 
         public IDataType this[string fullName] =>
             GetOrCreateType(fullName, () => throw new CatTypeNotFoundException(fullName));
 
         public TypeStorage()
         {
-            Types[Primitives.Any] = new AnyType(this);
+            // Types[Primitives.Any] = new AnyType(this);
             Types[Primitives.Never] = new NeverType(this);
             Types[Primitives.Object] = new ObjectType(this);
             Types[Primitives.String] = new StringType(this);
-            // Types[Primitives.Number] = new ObjectType(this);
+            Types[Primitives.Number] = new NumberType(this);
+            Types[Primitives.Bool] = new BoolType(this);
         }
 
         public IDataType GetOrCreateType(string fullName, Func<IDataType> generator)

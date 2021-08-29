@@ -8,10 +8,9 @@ namespace Cat.data.properties
 {
     public class DataProperty : IDataProperty
     {
-        public DataProperty(IDataType type, PropertyMeta meta, string name)
+        public DataProperty(IDataType type, string name)
         {
             Type = type;
-            Meta = meta;
             Name = name;
         }
 
@@ -21,47 +20,33 @@ namespace Cat.data.properties
         public IDataType DeclaringType { get; private set; }
 
         public IDataType Type { get; }
-        public PropertyMeta Meta { get; }
         public string Name { get; }
         public AccessRight AccessRights { get; } = AccessRight.Read | AccessRight.Write | AccessRight.Call;
 
         public IDataObject GetValue(IDataObject owner)
         {
             if ((AccessRights & AccessRight.Read) != 0)
-                return owner.GetProperty(this);
-            throw new CatIllegalPropertyAccessException(AccessRight.Read, DeclaringType, this);
+                return owner.GetProperty(Name);
+            throw new CatIllegalPropertyAccessException(AccessRight.Read, DeclaringType, Name);
         }
 
         public bool HasValue(IDataObject owner)
         {
-            return owner.HasProperty(this);
+            return owner.HasProperty(Name);
         }
 
         public void SetValue(IDataObject owner, IDataObject value)
         {
             if ((AccessRights & AccessRight.Write) != 0)
-                owner.SetProperty(this, value);
-            throw new CatIllegalPropertyAccessException(AccessRight.Write, DeclaringType, this);
+                owner.SetProperty(Name, value);
+            throw new CatIllegalPropertyAccessException(AccessRight.Write, DeclaringType, Name);
         }
 
         public void CallValue(IDataObject owner, params IDataObject[] args)
         {
             if ((AccessRights & AccessRight.Call) != 0)
-                owner.CallProperty(this, args);
-            throw new CatIllegalPropertyAccessException(AccessRight.Call, DeclaringType, this);
-        }
-
-        public void SetDeclaringType(IDataType type)
-        {
-            if (DeclaringType != null)
-                throw new CatSecurityException("Declaring type can be set only once");
-            DeclaringType = type;
-        }
-
-        public bool IsReplaceableBy(IDataProperty replacement)
-        {
-            return Name == replacement.Name && replacement.Type.IsAssignableFrom(Type) &&
-                   (AccessRights & replacement.AccessRights) == AccessRights;
+                owner.CallProperty(Name, args);
+            throw new CatIllegalPropertyAccessException(AccessRight.Call, DeclaringType, Name);
         }
     }
 

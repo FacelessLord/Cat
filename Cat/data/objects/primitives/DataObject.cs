@@ -2,15 +2,14 @@
 using Cat.data.exceptions;
 using Cat.data.objects.api;
 using Cat.data.properties;
-using Cat.data.properties.api;
 using Cat.data.types.api;
 
 namespace Cat.data.objects.primitives
 {
     public class DataObject : IDataObject
     {
+        public Dictionary<string, IDataObject> Properties { get; set; }
         public IDataType Type { get; }
-        public Dictionary<string, IDataObject> PropertyValues { get; private set; }
 
         public DataObject(IDataType type)
         {
@@ -19,30 +18,33 @@ namespace Cat.data.objects.primitives
 
         public void SetupProperties(Dictionary<string, IDataObject> propertyValues)
         {
-            PropertyValues = propertyValues;
+            Properties = propertyValues;
         }
 
-        public IDataObject GetProperty(IDataProperty property)
+        public IDataObject GetProperty(string property)
         {
-            return PropertyValues[property.Name];
+            return Properties[property];
         }
 
-        public bool HasProperty(IDataProperty property)
+        public bool HasProperty(string property)
         {
-            return PropertyValues.ContainsKey(property.Name);
+            return Properties.ContainsKey(property);
         }
 
-        public void SetProperty(IDataProperty property, IDataObject value)
+        public void SetProperty(string property, IDataObject value)
         {
-            PropertyValues[property.Name] = value;
+            Properties[property] = value;
         }
 
-        public IDataObject CallProperty(IDataProperty dataProperty, IDataObject[] args)
+        public IDataObject CallProperty(string property, IDataObject[] args)
         {
-            var propertyValue = PropertyValues[dataProperty.Name];
+            var propertyValue = Properties[property];
             if (propertyValue is ICallableDataObject callable)
+            {
                 return callable.Call(args);
-            throw new CatIllegalPropertyAccessException(AccessRight.Call, Type, dataProperty);
+            }
+
+            throw new CatIllegalPropertyAccessException(AccessRight.Call, Type, property);
         }
     }
 }

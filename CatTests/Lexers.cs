@@ -2,7 +2,6 @@ using System;
 using Cat.lexing.parsers;
 using Cat.lexing.tokens;
 using FakeItEasy;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace CatTests
