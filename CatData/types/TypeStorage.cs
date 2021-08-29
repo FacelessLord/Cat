@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Cat.data.exceptions;
 using Cat.data.objects.api;
+using Cat.data.properties;
+using Cat.data.properties.api;
 using Cat.data.types.api;
 using Cat.data.types.primitives;
 using Cat.data.types.primitives.@bool;
@@ -58,6 +60,9 @@ namespace Cat.data.types
             {
                 new ToStringMethod(this)
             };
+            objectType.Properties = objectType.BaseMethods
+                .Select(m => new DataProperty(m.Type, m.Name) as IDataProperty)
+                .ToHashSet();
         }
 
         public IDataType GetOrCreateType(string fullName, Func<IDataType> generator)

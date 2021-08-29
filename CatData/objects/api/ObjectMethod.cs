@@ -1,4 +1,5 @@
-﻿using Cat.data.types.api;
+﻿using System.Collections.Generic;
+using Cat.data.types.api;
 
 namespace Cat.data.objects.api
 {
@@ -7,6 +8,7 @@ namespace Cat.data.objects.api
         protected ObjectMethod(IDataType function, string methodName) : base(function)
         {
             Name = methodName;
+            Properties = new Dictionary<string, IDataObject>();
         }
 
         public string Name { get; }

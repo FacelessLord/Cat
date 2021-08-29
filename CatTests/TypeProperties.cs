@@ -1,5 +1,4 @@
-﻿using Cat.data.objects.primitives;
-using Cat.data.types;
+﻿using Cat.data.types;
 using Cat.data.types.primitives;
 using FluentAssertions;
 using NUnit.Framework;
@@ -7,7 +6,7 @@ using NUnit.Framework;
 namespace CatTests
 {
     [TestFixture]
-    public class Objects
+    public class TypeProperties
     {
         public ITypeStorage TypeStorage;
 
@@ -18,11 +17,10 @@ namespace CatTests
         }
 
         [Test]
-        public void Creates_Object_FromType()
+        public void ObjectTypeHave_ToString_Method()
         {
             var objectType = TypeStorage[Primitives.Object];
-            var obj = objectType.CreateInstance();
-            obj.Should().BeOfType<DataObject>();
+            objectType.Properties.Should().Contain(p => p.Name == "toString");
         }
     }
 }
