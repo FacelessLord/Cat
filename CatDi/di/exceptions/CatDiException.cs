@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cat.di.exceptions
+namespace CatDi.di.exceptions
 {
     public class CatDiException : Exception
     {
