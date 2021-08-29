@@ -1,16 +1,15 @@
 ﻿using Cat.data.objects.api;
 using Cat.data.objects.primitives;
-using Cat.data.objects.wrappers;
 using Cat.data.types.primitives.@object;
 
-namespace Cat.data.types.primitives.number
+namespace Cat.data.types.primitives.@bool
 {
-    public class NumberType : ObjectType
+    public class BoolType : ObjectType
     {
-        private const string TypeName = "Number";
+        private const string TypeName = "Bool";
         private const string TypeFullName = TypesPaths.System + TypeName;
 
-        public NumberType(TypeStorage types) : base(types)
+        public BoolType()
         {
             Name = TypeName;
             FullName = TypeFullName;
@@ -23,7 +22,7 @@ namespace Cat.data.types.primitives.number
 
         public override IDataObject NewInstance(params object[] args)
         {
-            return new NumberDataObject(this, NumberWrapper.FromObject(args[0]));
+            return new BoolDataObject(this, (bool) args[0]);
         }
     }
 }

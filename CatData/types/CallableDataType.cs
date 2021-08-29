@@ -6,7 +6,7 @@ namespace Cat.data.types
 {
     public class CallableDataType : ObjectType, ICallableDataType
     {
-        public CallableDataType(TypeStorage types, params IDataType[] args) : base(types)
+        public CallableDataType(params IDataType[] args)
         {
             SourceTypes = args.Take(args.Length - 1).ToArray();
             TargetType = args[^1];

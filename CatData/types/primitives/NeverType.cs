@@ -10,7 +10,7 @@ namespace Cat.data.types.primitives
         private const string TypeName = "Never";
         private const string TypeFullName = TypesPaths.System + "." + TypeName;
 
-        public NeverType(TypeStorage types) : base(types)
+        public NeverType()
         {
             Name = TypeName;
             FullName = TypeFullName;

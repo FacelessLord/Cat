@@ -9,7 +9,7 @@ namespace Cat.data.types.primitives.@string
         private const string TypeName = "String";
         private const string TypeFullName = TypesPaths.System + "." + TypeName;
 
-        public StringType(TypeStorage types) : base(types)
+        public StringType()
         {
             Name = TypeName;
             FullName = TypeFullName;

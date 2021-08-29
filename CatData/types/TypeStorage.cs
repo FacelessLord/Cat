@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cat.data.exceptions;
+using Cat.data.objects.api;
 using Cat.data.types.api;
 using Cat.data.types.primitives;
 using Cat.data.types.primitives.@bool;
@@ -36,11 +37,27 @@ namespace Cat.data.types
         public TypeStorage()
         {
             // Types[Primitives.Any] = new AnyType(this);
-            Types[Primitives.Never] = new NeverType(this);
-            Types[Primitives.Object] = new ObjectType(this);
-            Types[Primitives.String] = new StringType(this);
-            Types[Primitives.Number] = new NumberType(this);
-            Types[Primitives.Bool] = new BoolType(this);
+            Types[Primitives.Never] = new NeverType();
+            Types[Primitives.Object] = new ObjectType();
+            Types[Primitives.String] = new StringType();
+            Types[Primitives.Number] = new NumberType();
+            Types[Primitives.Bool] = new BoolType();
+
+            SetupBaseMethods();
+        }
+
+        private void SetupBaseMethods()
+        {
+            SetupObjectBaseMethods();
+        }
+
+        private void SetupObjectBaseMethods()
+        {
+            var objectType = ((ObjectType) Types[Primitives.Object]);
+            objectType.BaseMethods = new HashSet<ObjectMethod>()
+            {
+                new ToStringMethod(this)
+            };
         }
 
         public IDataType GetOrCreateType(string fullName, Func<IDataType> generator)
@@ -69,7 +86,7 @@ namespace Cat.data.types
             if (a.FullName.CompareTo(b) > 0)
                 (a, b) = (b, a);
             return GetOrCreateType(IntersectionFullName(a, b),
-                () => new ObjectType(this)
+                () => new ObjectType()
                 {
                     Name = IntersectionName(a, b),
                     FullName = IntersectionFullName(a, b),
@@ -92,7 +109,7 @@ namespace Cat.data.types
             if (a.FullName.CompareTo(b) > 0)
                 (a, b) = (b, a);
             return GetOrCreateType(UnionFullName(a, b),
-                () => new ObjectType(this)
+                () => new ObjectType()
                 {
                     Name = UnionName(a, b),
                     FullName = UnionFullName(a, b),
@@ -113,7 +130,7 @@ namespace Cat.data.types
         public IDataType Function(params IDataType[] args)
         {
             return GetOrCreateType(CallableDataType.CreateFunctionFullName(args),
-                () => new CallableDataType(this, args));
+                () => new CallableDataType(args));
         }
     }
 }

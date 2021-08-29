@@ -10,9 +10,9 @@ namespace Cat.data.types.primitives.@object
         private const string TypeName = "Object";
         private const string TypeFullName = TypesPaths.System + "." + TypeName;
 
-        public static HashSet<ObjectMethod> BaseMethods = new HashSet<ObjectMethod>();
+        public HashSet<ObjectMethod> BaseMethods = new HashSet<ObjectMethod>();
 
-        public ObjectType(TypeStorage types) : base(TypeName, TypeFullName)
+        public ObjectType() : base(TypeName, TypeFullName)
         {
         }
 

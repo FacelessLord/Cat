@@ -10,7 +10,7 @@ namespace Cat.data.types
     public abstract class DataType : IDisposable, IDataType
     {
         public HashSet<string> PropertyNames { get; set; }
-        private HashSet<IDataProperty> properties;
+        private HashSet<IDataProperty> properties = new HashSet<IDataProperty>();
 
         public HashSet<IDataProperty> Properties
         {
