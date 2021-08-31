@@ -39,15 +39,6 @@ namespace CatDi.di
             Factories[interfaceType].Add(factory);
         }
 
-        internal void RegisterSingletonInternal<TR, TI>(string name)
-        {
-            var interfaceType = typeof(TI);
-            if (!Factories.ContainsKey(interfaceType))
-                Factories[interfaceType] = new HashSet<IFactory>();
-
-            Factories[interfaceType].Add(Factory.CreateSingletonFactoryFor<TR>(name));
-        }
-
         public KernelGeneratorConfig<T> Register<T>(Func<Resolver, T> func)
         {
             return new(this, func);
