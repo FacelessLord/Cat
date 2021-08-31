@@ -4,6 +4,7 @@ using Cat.ast;
 using Cat.ast.nodes;
 using Cat.ast.rules;
 using Cat.lexing;
+using Cat.lexing.tokens;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -13,14 +14,14 @@ namespace CatTests
     public class Parsers
     {
         private static Lazy<Lexer> lexer = new(() => new Lexer());
-        private static Lazy<Parser> parser = new(() => new Parser());
+        private static Lazy<AstBuilder> parser = new(() => new AstBuilder());
         
         [Test]
         public void ParserParses_MostSimplePipeline()
         {
             var code = "2";
             var tokens = lexer.Value.ParseCode(code);
-            var node = parser.Value.TryParse(Rules.FunctionBody, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.FunctionBody, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<NumberNode>();
         }
@@ -30,7 +31,7 @@ namespace CatTests
         {
             var code = "\"1\" | 124 & '12'";
             var tokens = lexer.Value.ParseCode(code);
-            var node = parser.Value.TryParse(Rules.FunctionBody, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.FunctionBody, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<PipelineOrNode>();
             var pipelineOrNode = (PipelineOrNode) node;
@@ -46,7 +47,7 @@ namespace CatTests
         {
             var code = "[123123, 21, '3',\"23\", testVar]";
             var tokens = lexer.Value.ParseCode(code).ToList();
-            var node = parser.Value.TryParse(Rules.Literal, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.Literal, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<ListNode>();
             var listNode = (ListNode) node;
@@ -64,7 +65,7 @@ namespace CatTests
         {
             var code = "[123123, [1, 4], testVar]";
             var tokens = lexer.Value.ParseCode(code).ToList();
-            var node = parser.Value.TryParse(Rules.Literal, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.Literal, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<ListNode>();
             var list = (ListNode) node;
@@ -87,7 +88,7 @@ namespace CatTests
         {
             var code = "{ a : 1, b:\":\", c:c}";
             var tokens = lexer.Value.ParseCode(code).ToList();
-            var node = parser.Value.TryParse(Rules.Literal, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.Literal, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<ObjectLiteralNode>();
             var objectNode = (ObjectLiteralNode) node;
@@ -106,7 +107,7 @@ namespace CatTests
             var code = "{c:{c:{f:'F'}}}";
 
             var tokens = lexer.Value.ParseCode(code).ToList();
-            var node = parser.Value.TryParse(Rules.Literal, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.Literal, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<ObjectLiteralNode>();
             var objectNode = (ObjectLiteralNode) node;
@@ -122,12 +123,12 @@ namespace CatTests
         }
 
         [Test]
-        public void ParserParses_VariableDefinition()
+        public void ParserParses_VariableDefinitionWithType()
         {
-            var code = "let c";
+            var code = "let c : A";
 
             var tokens = lexer.Value.ParseCode(code).ToList();
-            var node = parser.Value.TryParse(Rules.LetVarStatement, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.LetVarStatement, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<VariableStatementNode>();
             var variableNode = (VariableStatementNode) node;
@@ -136,12 +137,47 @@ namespace CatTests
         }
         
         [Test]
-        public void ParserParses_VariableDefinitionWithValueSet()
+        public void ParserParses_Id()
         {
-            var code = "( let c = 2 )";
+            var code = "a";
 
             var tokens = lexer.Value.ParseCode(code).ToList();
-            var node = parser.Value.TryParse(Rules.Expression, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.Token(TokenTypes.Id), AstBuilder.OnError, tokens);
+
+            node.Should().BeOfType<TokenNode>();
+        }
+        [Test]
+        public void ParserParses_Id_As_TypeName()
+        {
+            var code = "A";
+
+            var tokens = lexer.Value.ParseCode(code).ToList();
+            var node = parser.Value.TryBuild(Rules.TypeName, AstBuilder.OnError, tokens);
+
+            node.Should().BeOfType<IdNode>();
+            var variableNode = (IdNode) node;
+            variableNode.IdToken.Should().Be(code);
+        }
+        [Test]
+        public void ParserParses_TypeName()
+        {
+            var code = "A.B.C";
+
+            var tokens = lexer.Value.ParseCode(code).ToList();
+            var node = parser.Value.TryBuild(Rules.TypeName, AstBuilder.OnError, tokens);
+
+            node.Should().BeOfType<IdNode>();
+            var variableNode = (IdNode) node;
+            variableNode.IdToken.Should().Be(code);
+        }
+        
+        [Test]
+        public void ParserParses_VariableDefinitionWithValueSet()
+        {
+            var code = "let c = 2";
+
+            var tokens = lexer.Value.ParseCode(code).ToList();
+            var node = parser.Value.TryBuild(Rules.Expression, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<VariableStatementNode>();
             var variableNode = (VariableStatementNode) node;
@@ -155,7 +191,7 @@ namespace CatTests
             var code = "( let c = 2 )";
 
             var tokens = lexer.Value.ParseCode(code).ToList();
-            var node = parser.Value.TryParse(Rules.Expression, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.Expression, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<VariableStatementNode>();
             var variableNode = (VariableStatementNode) node;
@@ -169,7 +205,7 @@ namespace CatTests
             var code = "let c = ( { a: { L: let a = ({d: 3}) }, d: [{i: \"2\"}] } | [0] )";
 
             var tokens = lexer.Value.ParseCode(code).ToList();
-            var node = parser.Value.TryParse(Rules.LetVarStatement, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.LetVarStatement, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<VariableStatementNode>();
         }
@@ -180,7 +216,7 @@ namespace CatTests
             var code = "{ L: ( 2 ) }";
 
             var tokens = lexer.Value.ParseCode(code).ToList();
-            var node = parser.Value.TryParse(Rules.Pipeline, Parser.OnError, tokens);
+            var node = parser.Value.TryBuild(Rules.Pipeline, AstBuilder.OnError, tokens);
 
             node.Should().BeOfType<ObjectLiteralNode>();
         }

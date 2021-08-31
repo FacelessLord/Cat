@@ -66,6 +66,9 @@ namespace Cat.ast.rules
                 .StartWith(Token(Number))
                 .CollectBy(nodes => new NumberNode(nodes[0] as TokenNode)))
             .With(Chain
+                .StartWith(Token(Bool))
+                .CollectBy(nodes => new BoolNode(nodes[0] as TokenNode)))
+            .With(Chain
                 .StartWith(Token(Id))
                 .CollectBy(nodes => new IdNode(nodes[0] as TokenNode)))
             .With(Chain
@@ -79,8 +82,30 @@ namespace Cat.ast.rules
                 .Then(Token(RBrace))
                 .CollectBy(nodes => new ObjectLiteralNode(nodes[1] as ValuePairListNode)));
 
+        public static IRule TypeName = Reader
+            .Named(nameof(TypeName))
+            .With(Lazy(() => Chain.StartWith(Token(Id))
+                .Then(Token(Dot))
+                .Then(TypeName)
+                .CollectBy(nodes =>
+                    new IdNode(new TokenNode(new Token(Id,
+                        ((TokenNode) nodes[0]).Token.Value + "." + ((IdNode) nodes[2]).IdToken))))))
+            .With(Chain.StartWith(Token(Id))
+                .CollectBy(nodes =>
+                    new IdNode(nodes[0] as TokenNode)));
+
         public static IRule LetVarStatement = Reader
             .Named(nameof(LetVarStatement))
+            .With(Lazy(() => Chain
+                .StartWith(Token(Let))
+                .Then(Token(Id))
+                .Then(Token(Colon))
+                .Then(TypeName)
+                .Then(Token(Set))
+                .Then(Token(LParen))
+                .Then(Pipeline)
+                .Then(Token(RParen))
+                .CollectBy(nodes => new VariableStatementNode(new IdNode(nodes[1] as TokenNode), nodes[6], nodes[3]))))
             .With(Lazy(() => Chain
                 .StartWith(Token(Let))
                 .Then(Token(Id))
@@ -92,9 +117,23 @@ namespace Cat.ast.rules
             .With(Lazy(() => Chain
                 .StartWith(Token(Let))
                 .Then(Token(Id))
+                .Then(Token(Colon))
+                .Then(TypeName)
+                .Then(Token(Set))
+                .Then(Expression)
+                .CollectBy(nodes => new VariableStatementNode(new IdNode(nodes[1] as TokenNode), nodes[5], nodes[3]))))
+            .With(Lazy(() => Chain
+                .StartWith(Token(Let))
+                .Then(Token(Id))
                 .Then(Token(Set))
                 .Then(Expression)
                 .CollectBy(nodes => new VariableStatementNode(new IdNode(nodes[1] as TokenNode), nodes[3]))))
+            .With(Chain
+                .StartWith(Token(Let))
+                .Then(Token(Id))
+                .Then(Token(Colon))
+                .Then(TypeName)
+                .CollectBy(nodes => new VariableStatementNode(new IdNode(nodes[1] as TokenNode), type: nodes[3])))
             .With(Chain
                 .StartWith(Token(Let))
                 .Then(Token(Id))
@@ -131,6 +170,7 @@ namespace Cat.ast.rules
                 .CollectBy(nodes => nodes[0]));
 
         public static IRule Expression = ArithmeticExpressionRules.ArithmeticExpression;
+
         public static IRule FunctionBody = Reader
             .Named(nameof(FunctionBody))
             .With(Chain

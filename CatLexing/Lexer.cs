@@ -19,6 +19,7 @@ namespace Cat.lexing
                 new OperatorTokenParser(TokenTypes.OperatorTokenTypes.Value),
                 new StringParser(),
                 new NumberParser(),
+                new BoolParser(),
                 new IdParser()
             })
             .ToList();
@@ -44,6 +45,8 @@ namespace Cat.lexing
                     foreach (var parser in parsers)
                     {
                         parser.Parse(in code, Consumer);
+                        if(code.Length < lastCodeLength)
+                            break;
                     }
                 }
 

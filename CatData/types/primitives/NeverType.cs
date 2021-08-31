@@ -7,8 +7,8 @@ namespace Cat.data.types.primitives
 {
     public class NeverType : ObjectType
     {
-        private const string TypeName = "Never";
-        private const string TypeFullName = TypesPaths.System + "." + TypeName;
+        public const string TypeName = "Never";
+        public const string TypeFullName = TypesPaths.System + "." + TypeName;
 
         public NeverType()
         {
@@ -20,20 +20,5 @@ namespace Cat.data.types.primitives
         public HashSet<IDataProperty> Properties { get; }
         public string Name { get; }
         public string FullName { get; }
-
-        public override bool IsAssignableFrom(IDataType type)
-        {
-            return false;
-        }
-
-        public override bool IsAssignableTo(IDataType type)
-        {
-            return true;
-        }
-
-        public override bool IsEquivalentTo(IDataType type)
-        {
-            return type is NeverType;
-        }
     }
 }

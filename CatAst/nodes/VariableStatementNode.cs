@@ -4,16 +4,13 @@
     {
         public INode Id { get; }
         public INode ExpressionNode { get; }
+        public INode Type { get; }
 
-        public VariableStatementNode(INode id)
-        {
-            Id = id;
-        }
-
-        public VariableStatementNode(INode id, INode expressionNode)
+        public VariableStatementNode(INode id, INode expressionNode = null, INode type = null)
         {
             Id = id;
             ExpressionNode = expressionNode;
+            Type = type;
         }
     }
 }

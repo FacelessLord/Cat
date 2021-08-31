@@ -8,7 +8,7 @@ namespace Cat.data.types.primitives.@object
     public class ObjectType : DataType
     {
         private const string TypeName = "Object";
-        private const string TypeFullName = TypesPaths.System + "." + TypeName;
+        public const string TypeFullName = TypesPaths.System + "." + TypeName;
 
         public HashSet<ObjectMethod> BaseMethods = new HashSet<ObjectMethod>();
 

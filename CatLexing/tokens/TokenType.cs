@@ -63,6 +63,11 @@
     {
         public string Name { get; } = "number";
     }
+    
+    public class BoolTokenType : ITokenType
+    {
+        public string Name { get; } = "bool";
+    }
 
     public class IdTokenType : ITokenType
     {

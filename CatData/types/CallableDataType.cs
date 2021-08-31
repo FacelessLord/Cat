@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Cat.data.types.api;
 using Cat.data.types.primitives.@object;
 
@@ -11,7 +12,10 @@ namespace Cat.data.types
             SourceTypes = args.Take(args.Length - 1).ToArray();
             TargetType = args[^1];
 
-            Name= CreateFunctionName(args);
+            ConstructorTypes = new List<(IDataType, Variancy)>(SourceTypes.Select(t => (t, Variancy.Contravariant)))
+                { (TargetType, Variancy.Covariant) };
+
+            Name = CreateFunctionName(args);
             FullName = CreateFunctionFullName(args);
         }
 
@@ -27,14 +31,5 @@ namespace Cat.data.types
 
         public IDataType[] SourceTypes { get; }
         public IDataType TargetType { get; }
-
-        public override bool IsAssignableFrom(IDataType type)
-        {
-            return type is CallableDataType callable
-                   && SourceTypes.Length == callable.SourceTypes.Length
-                   && SourceTypes.Select((t, i) => (t, i))
-                       .All(p => p.t.IsAssignableFrom(callable.SourceTypes[p.i]))
-                   && TargetType.IsAssignableTo(callable.TargetType);
-        }
     }
 }

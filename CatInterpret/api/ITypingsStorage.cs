@@ -7,5 +7,6 @@ namespace Cat.interpret
         public void SetVariableType(string variableName, IDataType type);
 
         public IDataType GetVariableType(string variableName);
+        public bool HasVariable(string variableName);
     }
 }

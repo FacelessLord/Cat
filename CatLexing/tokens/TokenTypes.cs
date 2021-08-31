@@ -11,6 +11,7 @@ namespace Cat.lexing.tokens
         public static readonly ITokenType Semicolon = new SimpleTokenType(nameof(Semicolon), ";");
         public static readonly ITokenType Colon = new SimpleTokenType(nameof(Colon), ":");
         public static readonly ITokenType Comma = new SimpleTokenType(nameof(Comma), ",");
+        public static readonly ITokenType Dot = new SimpleTokenType(nameof(Dot), ".");
 
         #endregion
 
@@ -72,7 +73,8 @@ namespace Cat.lexing.tokens
         public static readonly ITokenType Number = new NumberTokenType();
         public static readonly ITokenType String = new StringTokenType();
         public static readonly ITokenType Id = new IdTokenType();
-
+        public static readonly ITokenType Bool = new BoolTokenType();
+        
         #endregion
 
         public static readonly ITokenType Unknown = new UnknownTokenType();
@@ -87,5 +89,6 @@ namespace Cat.lexing.tokens
                 .Select(field => field.GetValue(null) as OperatorTokenType)
                 .Where(value => value != null)
                 .ToList());
+
     }
 }

@@ -22,6 +22,8 @@ namespace Cat.data.types
             }
         }
 
+        public List<(IDataType, Variancy)> ConstructorTypes { get; set; } = new();
+
         public string Name { get; set; }
         public string FullName { get; set; }
 
@@ -29,27 +31,6 @@ namespace Cat.data.types
         {
             Name = name;
             FullName = fullName;
-        }
-
-        public virtual bool IsAssignableFrom(IDataType type)
-        {
-            return IsAssignableFromTo(this, type);
-        }
-
-        public static bool IsAssignableFromTo(IDataType from, IDataType to)
-        {
-            return from.Properties.All(property => to.Properties
-                .Any(m => property.Name == m.Name && m.Type.IsAssignableFrom(property.Type)));
-        }
-
-        public virtual bool IsAssignableTo(IDataType type)
-        {
-            return type.IsAssignableFrom(this);
-        }
-
-        public virtual bool IsEquivalentTo(IDataType type)
-        {
-            return IsAssignableTo(type) && IsAssignableFrom(type);
         }
 
         public virtual IDataProperty GetProperty(string name)
