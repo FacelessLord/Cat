@@ -7,6 +7,7 @@ namespace Cat.ast.api
     public static class RuleHelper
     {
         public static ChainStarter Chain => new();
+        public static ChainStarter ComplementingChain => new();
         public static LazyChain Lazy(Func<IRuleChain> chain) => new(chain);
 
         public static ReaderNamingConfig Reader=> new ();
@@ -23,23 +24,21 @@ namespace Cat.ast.api
         public string Name { get; private set; }
         public static RuleReader Create(string name) => new(name);
         private List<IRuleChain> _chains;
+        private List<IRuleChain> _complementingChains;
+        
 
-        private RuleReader(string name)
+        protected RuleReader(string name)
         {
             Name = name;
             _chains = new List<IRuleChain>();
+            _complementingChains = new List<IRuleChain>();
         }
 
         internal void FillFrom(RuleReader reader)
         {
             Name = reader.Name;
             _chains = reader._chains;
-        }
-
-        private RuleReader(RuleReader reader, IRuleChain parser)
-        {
-            Name = reader.Name;
-            _chains = new List<IRuleChain>(reader._chains) {parser};
+            _complementingChains = reader._complementingChains;
         }
 
         public RuleReader With(IRuleChain chain)
@@ -53,14 +52,26 @@ namespace Cat.ast.api
             _chains.Add(chain(this));
             return this;
         }
+        public RuleReader ComplementBy(IRuleChain chain)
+        {
+            _complementingChains.Add(chain);
+            return this;
+        }
+        
+        public RuleReader ComplementBy(Func<RuleReader, IRuleChain> chain)
+        {
+            _complementingChains.Add(chain(this));
+            return this;
+        }
 
         public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode node)
         {
             var stackDepth = tokens.PushPointer();
             foreach (var chain in _chains)
             {
-                if (chain.TryRead(tokens, onError, out node))
+                if (chain.TryRead(tokens, onError, out var intermediateNode))
                 {
+                    ComplementNode(tokens, onError, out node, intermediateNode);
                     return true;
                 }
 
@@ -72,6 +83,24 @@ namespace Cat.ast.api
             tokens.ResetPointer();
 
             return false;
+        }
+
+        private void ComplementNode(BufferedEnumerable<Token> tokens, Action<Token,string> onError, out INode node, INode intermediateNode)
+        {
+            var prevNode = intermediateNode;
+            node = intermediateNode;
+
+            do
+            {
+                foreach (var chain in _complementingChains)
+                {
+                    if (chain.TryRead(tokens, onError, out var newNode, node))
+                    {
+                        prevNode = node;
+                        node = newNode;
+                    }
+                }
+            } while (prevNode != node);
         }
 
         public override string ToString()
@@ -105,13 +134,17 @@ namespace Cat.ast.api
         {
             return new RuleChain(_rules, collector);
         }
+        public ComplementingRuleChain CollectBy(Func<INode, INode[], INode> collector)
+        {
+            return new ComplementingRuleChain(_rules, collector);
+        }
     }
     
     public interface IRuleChain
     {
-        public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode collectedNode);
+        public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode collectedNode, INode previousNode = null);
     }
-
+    
     public class RuleChain: IRuleChain
     {
         private readonly List<IRule> _rules;
@@ -123,7 +156,7 @@ namespace Cat.ast.api
             _collector = collector;
         }
 
-        public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode collectedNode)
+        public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode collectedNode, INode previousNode = null)
         {
             collectedNode = null;
             var nodes = new INode[_rules.Count];
@@ -140,6 +173,35 @@ namespace Cat.ast.api
             return true;
         }
     }
+    
+    public class ComplementingRuleChain: IRuleChain
+    {
+        private readonly List<IRule> _rules;
+        private readonly Func<INode, INode[], INode> _collector;
+
+        public ComplementingRuleChain(List<IRule> rules, Func<INode, INode[], INode> collector)
+        {
+            _rules = rules;
+            _collector = collector;
+        }
+
+        public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode collectedNode, INode previousNode = null)
+        {
+            collectedNode = null;
+            var nodes = new INode[_rules.Count];
+            for (var i = 0; i < _rules.Count; i++)
+            {
+                var rule = _rules[i];
+                // ReSharper disable once PossibleMultipleEnumeration
+                if (!rule.TryRead(tokens, onError, out var node)) return false;
+                nodes[i] = node;
+            }
+
+            collectedNode = _collector(previousNode, nodes);
+
+            return true;
+        }
+    }
 
     public class LazyChain : IRuleChain
     {
@@ -149,9 +211,9 @@ namespace Cat.ast.api
         {
             _chain = chain;
         }
-        public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode collectedNode)
+        public bool TryRead(BufferedEnumerable<Token> tokens, Action<Token, string> onError, out INode collectedNode, INode previousNode = null)
         {
-            return _chain().TryRead(tokens, onError, out collectedNode);
+            return _chain().TryRead(tokens, onError, out collectedNode, previousNode);
         }
     }
 

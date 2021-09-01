@@ -115,5 +115,31 @@ namespace CatInterpretTests
 
             resolvedType.Should().Be(TypeStorage[Primitives.Object]);
         }
+        
+        [Test]
+        public void Interprets_TypeCast_As_TargetType()
+        {
+            var node = Parse(Rules.Expression, "244 as system.Bool");
+            var resolvedType = Interpreter.Interpret(node);
+
+            resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
+        }
+        
+        [Test]
+        public void Interprets_Variable_TypeCast_As_TargetType()
+        {
+            var node = Parse(Rules.Expression, "let a = 244");
+            var resolvedType = Interpreter.Interpret(node);
+
+            resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
+        }
+        [Test]
+        public void Interprets_VariableToVariable_TypeCast_As_TargetType()
+        {
+            var node = Parse(Rules.Pipeline, "let b = let a = 244 as system.Bool");
+            var resolvedType = Interpreter.Interpret(node);
+
+            resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
+        }
     }
 }

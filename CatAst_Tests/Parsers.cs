@@ -172,6 +172,45 @@ namespace CatTests
         }
         
         [Test]
+        public void ParserParses_TypeCast()
+        {
+            var code = "(5) as system.Bool";
+
+            var tokens = lexer.Value.ParseCode(code).ToList();
+            var node = parser.Value.TryBuild(Rules.Expression, AstBuilder.OnError, tokens);
+
+            node.Should().BeOfType<TypeCastNode>();
+            var variableNode = (TypeCastNode) node;
+            variableNode.Type.Should().BeOfType<IdNode>();
+            variableNode.Value.Should().BeOfType<NumberNode>();
+        }
+        [Test]
+        public void ParserParses_NestedTypeCast()
+        {
+            var code = "((5) as system.Object) as system.Bool";
+            //todo Create a way to enable left-end recursion (at least triggered by some token after rule)
+            // like if we have "expression AS ..." (dots for all next tokens) and we want to
+            // check for typecasting expression (expression AS typename) we can check if next token is "AS"
+            // and then run ICompletingRule on expressionNode and token list.
+            // if rule succeeds then we use standard-interface node collector with expressionNode and
+            // all next found rule nodes to create wrapper node and then we return wrapper instead of expressionNode.
+            // But if completing rule won't succeed we check next completing rules.
+            // if all completing rules are unsuccessful we return expressionNode.
+            // This allows us to have postfix operators without strong pain in ass,
+            // but restricts us to create lots of left-recursive rules
+            var tokens = lexer.Value.ParseCode(code).ToList();
+            var node = parser.Value.TryBuild(Rules.Expression, AstBuilder.OnError, tokens);
+
+            node.Should().BeOfType<TypeCastNode>();
+            var variableNode = (TypeCastNode) node;
+            variableNode.Type.Should().BeOfType<IdNode>();
+            variableNode.Value.Should().BeOfType<TypeCastNode>();
+            var subVariableNode = (TypeCastNode) variableNode.Value;
+            subVariableNode.Type.Should().BeOfType<IdNode>();
+            subVariableNode.Value.Should().BeOfType<NumberNode>();
+        }
+        
+        [Test]
         public void ParserParses_VariableDefinitionWithValueSet()
         {
             var code = "let c = 2";

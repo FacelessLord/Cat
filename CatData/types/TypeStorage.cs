@@ -24,6 +24,7 @@ namespace Cat.data.types
 
         public IDataType Union(IDataType a, IDataType b);
         public IDataType Function(params IDataType[] args);
+        public bool HasType(string typeName);
 
         public IDataType this[string fullName] { get; }
 
@@ -36,6 +37,11 @@ namespace Cat.data.types
         public Dictionary<string, IDataType> Types = new();
 
         public Dictionary<(string, string), bool> AssignabilityCache = new();
+
+        public bool HasType(string typeName)
+        {
+            return Types.ContainsKey(typeName);
+        }
 
         public IDataType this[string fullName] =>
             GetOrCreateType(fullName, () => throw new CatTypeNotFoundException(fullName));

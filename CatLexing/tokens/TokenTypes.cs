@@ -65,6 +65,7 @@ namespace Cat.lexing.tokens
         #region keywords
 
         public static readonly ITokenType Let = new KeyWordTokenType("let");
+        public static readonly ITokenType As = new KeyWordTokenType("as");
 
         #endregion
 

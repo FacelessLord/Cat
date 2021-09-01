@@ -54,6 +54,10 @@ namespace Cat.ast.rules
         public static Func<RuleReader, RuleReader> ArithmeticStar = TwoBinaryArithmeticOperationGenerator(nameof(ArithmeticStar))(Star, Divide);
         public static Func<RuleReader, RuleReader> ArithmeticNot = UnaryArithmeticOperationGenerator(nameof(ArithmeticNot))(ExclamationMark);
         public static Func<RuleReader, RuleReader> ArithmeticUPlus = TwoUnaryArithmeticOperationGenerator(nameof(ArithmeticUPlus))(Plus, Minus);
+        // public static Func<RuleReader, RuleReader> ArithmeticAs = prevRule => Reader.Named(nameof(ArithmeticAs))
+        //     .With(Chain.StartWith(Token(LParen)).Then(prevRule).Then(Token(RParen)).Then(Token(As)).Then(TypeName)
+        //         .CollectBy(nodes => new TypeCastNode(nodes[1], nodes[4])))
+        //     .With(Chain.StartWith(prevRule).CollectBy(IdentityCollector));
         public static Func<RuleReader, RuleReader> ArithmeticParens = prevRule => Reader.Named(nameof(ArithmeticParens))
             .With(Chain.StartWith(Token(LParen)).Then(prevRule).Then(Token(RParen))
                 .CollectBy(nodes => nodes[1]))
@@ -69,6 +73,7 @@ namespace Cat.ast.rules
             .Then(ArithmeticStar)
             .Then(ArithmeticNot)
             .Then(ArithmeticUPlus)
+            // .Then(ArithmeticAs)
             .Then(ArithmeticParens)
             .Recurse();
     }

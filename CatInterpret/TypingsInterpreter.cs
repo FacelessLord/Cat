@@ -27,7 +27,8 @@ namespace Cat.interpret
                 StringNode n => Interpret(n),
                 BoolNode n => Interpret(n),
                 VariableStatementNode n => Interpret(n),
-                _ => throw new InvalidOperationException()
+                TypeCastNode n => Interpret(n),
+                _ => throw new NotImplementedException($"Type {node.GetType().Name} is not interpretable")
             };
         }
 
@@ -81,6 +82,10 @@ namespace Cat.interpret
                 throw new CatTypeMismatchException(expressionType, varType);
 
             return varType;
+        }
+        public IDataType Interpret(TypeCastNode node)
+        {
+            return _typeStorage[((IdNode) node.Type).IdToken];
         }
     }
 }

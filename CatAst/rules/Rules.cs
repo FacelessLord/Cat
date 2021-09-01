@@ -21,7 +21,7 @@ namespace Cat.ast.rules
         }
 
         //add new rules here
-        //use Lazy if you write recursive rules
+        //use Lazy if you write recursive rules or use rules defined later
         public static IRule SimpleExpression = Reader
             .Named(nameof(SimpleExpression))
             .With(Lazy(() => Chain.StartWith(Literal).CollectBy(nodes => nodes[0])))

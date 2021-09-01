@@ -30,5 +30,10 @@ namespace Cat.lexing.tokens
         {
             return HashCode.Combine(Type, Value);
         }
+
+        public override string ToString()
+        {
+            return $"{Type.Name}({Value})";
+        }
     }
 }
