@@ -1,7 +1,7 @@
 using System;
 using Cat.ast;
-using Cat.ast.nodes;
-using Cat.ast.rules;
+using Cat.ast.api;
+using Cat.ast.new_ast;
 using Cat.data.types;
 using Cat.data.types.api;
 using Cat.data.types.primitives;
@@ -14,6 +14,7 @@ using NUnit.Framework;
 
 namespace CatInterpretTests
 {
+    [TestFixture]
     public class TypingsInterpreterTests
     {
         public IInterpreter<IDataType> Interpreter;
@@ -29,10 +30,8 @@ namespace CatInterpretTests
             Kernel.Register<TypingsStorage>().As<ITypingsStorage>();
             Kernel.Register<TypingsInterpreter>().As<IInterpreter<IDataType>>();
             Kernel.Register<Lexer>().As<ILexer>();
-            Kernel.Register<AstBuilder>().As<IAstBuilder>();
-            Kernel.Register<Func<IRule, string, INode>>(resolver => (rule, code) => 
-                    resolver.Resolve<IAstBuilder>().TryBuild(rule, AstBuilder.OnError, 
-                        resolver.Resolve<ILexer>().ParseCode(code)))
+            Kernel.Register<Func<IRule, string, INode>>(resolver => (rule, text) =>
+                    rule.Read(new BufferedEnumerable<Token>(resolver.Resolve<ILexer>().ParseCode(text))))
                 .As<Func<IRule, string, INode>>();
         }
 
@@ -70,7 +69,7 @@ namespace CatInterpretTests
 
             resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
         }
-        
+
         [Test]
         public void Interprets_Typed_VariableNode_WithoutValue()
         {
@@ -79,7 +78,7 @@ namespace CatInterpretTests
 
             resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
         }
-        
+
         [Test]
         public void Interprets_Typed_VariableNode_WithValue()
         {
@@ -88,7 +87,7 @@ namespace CatInterpretTests
 
             resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
         }
-        
+
         [Test]
         public void Interprets_ObjectTyped_VariableNode_WithValue_OfSubtype()
         {
@@ -97,7 +96,7 @@ namespace CatInterpretTests
 
             resolvedType.Should().Be(TypeStorage[Primitives.Object]);
         }
-        
+
         [Test]
         public void Interprets_BoolTyped_VariableNode_WithValue_OfNotRealSubtype()
         {
@@ -106,7 +105,7 @@ namespace CatInterpretTests
 
             resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
         }
-        
+
         [Test]
         public void Interprets_VarBoolToObject()
         {
@@ -115,7 +114,7 @@ namespace CatInterpretTests
 
             resolvedType.Should().Be(TypeStorage[Primitives.Object]);
         }
-        
+
         [Test]
         public void Interprets_TypeCast_As_TargetType()
         {
@@ -124,22 +123,22 @@ namespace CatInterpretTests
 
             resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
         }
-        
+
         [Test]
         public void Interprets_Variable_TypeCast_As_TargetType()
         {
-            var node = Parse(Rules.Expression, "let a = 244");
+            var node = Parse(Rules.LetVarStatement, "let a = 244");
             var resolvedType = Interpreter.Interpret(node);
 
-            resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
+            resolvedType.Should().Be(TypeStorage[Primitives.Number]);
         }
-        [Test]
-        public void Interprets_VariableToVariable_TypeCast_As_TargetType()
-        {
-            var node = Parse(Rules.Pipeline, "let b = let a = 244 as system.Bool");
-            var resolvedType = Interpreter.Interpret(node);
-
-            resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
-        }
+        // [Test]
+        // public void Interprets_VariableToVariable_TypeCast_As_TargetType()
+        // {
+        //     var node = Parse(Rules.Pipeline, "let b = let a = 244 as system.Bool");
+        //     var resolvedType = Interpreter.Interpret(node);
+        //
+        //     resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
+        // }
     }
 }

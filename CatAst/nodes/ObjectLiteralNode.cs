@@ -2,11 +2,11 @@
 {
     public class ObjectLiteralNode : INode
     {
-        public ValuePairListNode PairsList { get; }
+        public ValuePairNode[] Nodes { get; }
 
         public ObjectLiteralNode(ValuePairListNode pairsList)
         {
-            PairsList = pairsList;
+            Nodes = pairsList.Nodes.ToArray();
         }
     }
 }

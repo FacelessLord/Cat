@@ -13,5 +13,10 @@ namespace Cat.ast.nodes
                 throw new ArgumentException("Token have to have type String, not " + idToken.Token.Type);
             IdToken = idToken.Token.Value;
         }
+        
+        public IdNode(string idToken)
+        {
+            IdToken = idToken;
+        }
     }
 }

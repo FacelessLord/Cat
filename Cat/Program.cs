@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
 using Cat.ast;
-using Cat.ast.rules;
 using Cat.lexing;
 
 #nullable enable
@@ -11,16 +10,16 @@ namespace Cat
     {
         static void Main(string[] args)
         {
-            var lexer = new Lexer();
-            var parser = new AstBuilder();
-
-            var code = string.Join("", File.ReadLines("./code.ct"));
-
-            var tokens = lexer.ParseCode(code).ToList();
-            var node = parser.TryBuild(Rules.Expression, AstBuilder.OnError, tokens);
-            
-            //todo add json serializer for nodes
-            var a = 0;
+            // var lexer = new Lexer();
+            // var parser = new AstBuilder();
+            //
+            // var code = string.Join("", File.ReadLines("./code.ct"));
+            //
+            // var tokens = lexer.ParseCode(code).ToList();
+            // var node = parser.TryBuild(Rules.Expression, AstBuilder.OnError, tokens);
+            //
+            // //todo add json serializer for nodes
+            // var a = 0;
         }
     }
 }

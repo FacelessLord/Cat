@@ -2,11 +2,11 @@
 {
     public class ListNode : INode
     {
-        public ExpressionListNode ListInternals { get; }
+        public INode[] Nodes { get; }
 
         public ListNode(ExpressionListNode listInternals)
         {
-            ListInternals = listInternals;
+            Nodes = listInternals.Nodes.ToArray();
         }
     }
 }

@@ -1,7 +1,103 @@
-﻿namespace Cat.ast.new_ast
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cat.ast.nodes;
+using Cat.lexing.tokens;
+using static Cat.lexing.tokens.TokenTypes;
+
+namespace Cat.ast.new_ast
 {
     public class Rules
     {
+        private static Dictionary<ITokenType, IRule> TokenRules = new();
+
+        private static Func<INode[], INode> IdentityCollector = nodes => nodes[0];
+
+        public static IRule Token(ITokenType type)
+        {
+            if (!TokenRules.ContainsKey(type))
+            {
+                TokenRules[type] = new TokenRule(type);
+            }
+
+            return TokenRules[type];
+        }
+
+        public static IRule ID = Rule.Named(nameof(ID))
+            .With(Chain.StartWith(Token(Id))
+                .CollectBy(nodes => new IdNode(nodes[0] as TokenNode)));
+
+        private static CompositeRule TypeNameRecursive = Rule.Named(nameof(TypeName))
+            .With(_ => Chain.StartWith(_)
+                .Then(Token(Dot))
+                .Then(Token(Id))
+                .CollectTailBy(nodes => nodes[1]))
+            .With(Chain.StartWith(Token(Id))
+                .CollectBy(nodes => nodes[0]));
+
+        public static IRule TypeName = CompositeRule.FixLeftRecursion(TypeNameRecursive, nodes =>
+            new IdNode(string.Join('.', nodes.Cast<TokenNode>().Select(t => t.Token.Value))));
+
+        public static IRule ValuePair = Rule.Named(nameof(ValuePair))
+            .With(_ => Chain.StartWith(ID)
+                .Then(Token(Colon))
+                .Then(Expression)
+                .CollectBy(nodes => new ValuePairNode(nodes[0], nodes[2])));
+
+        public static IRule ValuePairList = Rule.Named(nameof(ValuePairList))
+            .With(_ => Chain.StartWith(ValuePair)
+                .Then(Token(Comma))
+                .Then(_)
+                .CollectBy(nodes => new ValuePairListNode(nodes[0] as ValuePairNode, nodes[2])))
+            .With(_ => Chain.StartWith(ValuePair).CollectBy(nodes => new ValuePairListNode(nodes[0] as ValuePairNode)));
+
+        public static IRule ExpressionList = Rule.Named(nameof(ExpressionList))
+            .With(_ => Chain.StartWith(Expression)
+                .Then(Token(Comma))
+                .Then(_)
+                .CollectBy(nodes => new ExpressionListNode(nodes[0], nodes[2])))
+            .With(_ => Chain.StartWith(Expression).CollectBy(nodes => new ExpressionListNode(nodes[0])));
+
+        public static IRule Literal = Rule.Named(nameof(Literal))
+            .With(Chain.StartWith(Token(Number)).CollectBy(nodes => new NumberNode(nodes[0] as TokenNode)))
+            .With(Chain.StartWith(Token(TokenTypes.String)).CollectBy(nodes => new StringNode(nodes[0] as TokenNode)))
+            .With(Chain.StartWith(Token(Bool)).CollectBy(nodes => new BoolNode(nodes[0] as TokenNode)))
+            .With(Chain.StartWith(ID).CollectBy(IdentityCollector))
+            .With(Chain.StartWith(Token(LBracket)).Then(ExpressionList).Then(Token(RBracket))
+                .CollectBy(nodes => new ListNode(nodes[1] as ExpressionListNode)))
+            .With(Chain.StartWith(Token(LBrace)).Then(ValuePairList).Then(Token(RBrace))
+                .CollectBy(nodes => new ObjectLiteralNode(nodes[1] as ValuePairListNode)));
+
+        public static IRule LetVarStatement = Rule.Named(nameof(LetVarStatement))
+            .With(_ => Chain.StartWith(Token(Let))
+                .Then(ID)
+                .Then(Token(Colon))
+                .Then(TypeName)
+                .Then(Token(TokenTypes.Equals))
+                .Then(Expression)
+                .CollectBy(nodes => new VariableStatementNode(nodes[1], nodes[5], nodes[3])))
+            .With(Chain.StartWith(Token(Let))
+                .Then(ID)
+                .Then(Token(Colon))
+                .Then(TypeName)
+                .CollectBy(nodes => new VariableStatementNode(nodes[1], null, nodes[3])))
+            .With(_ => Chain.StartWith(Token(Let))
+                .Then(ID)
+                .Then(Token(Set))
+                .Then(Expression)
+                .CollectBy(nodes => new VariableStatementNode(nodes[1], nodes[3])));
+
+        public static IRule SimpleExpression = Rule.Named(nameof(SimpleExpression))
+            .With(Chain.StartWith(Literal)
+                .CollectBy(IdentityCollector))
+            .With(Chain.StartWith(LetVarStatement)
+                .CollectBy(IdentityCollector));
+
+        public static IRule Expression = Rule.Named(nameof(Expression))
+            .With(Chain.StartWith(SimpleExpression)
+                .CollectBy(IdentityCollector));
         
+        //todo create arithmetic expressions
+        // they all have to be in one rule with 
     }
 }

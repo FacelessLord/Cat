@@ -25,7 +25,7 @@ namespace Cat.di
 
             _instance.Register<TypeStorage>().AsSingleton<ITypeStorage>();
             _instance.Register<Lexer>().AsSingleton<ILexer>();
-            _instance.Register<AstBuilder>().AsSingleton<IParser>();
+            // _instance.Register<AstBuilder>().AsSingleton<IParser>();
 
         }
     }

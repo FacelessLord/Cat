@@ -52,7 +52,7 @@ namespace Cat.interpret
             var variableName = ((IdNode) node.Id).IdToken;
             var varTypeNode = node.Type;
 
-            var expressionType = node.ExpressionNode == null ? null : Interpret(node.ExpressionNode);
+            var expressionType = node.Expression == null ? null : Interpret(node.Expression);
 
             if (varTypeNode == null)
             {
