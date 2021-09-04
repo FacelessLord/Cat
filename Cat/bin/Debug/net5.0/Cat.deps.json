@@ -1,0 +1,72 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v5.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v5.0": {
+      "Cat/1.0.0": {
+        "dependencies": {
+          "CatAst": "1.0.0",
+          "CatData": "1.0.0",
+          "CatDi": "1.0.0",
+          "CatLexing": "1.0.0"
+        },
+        "runtime": {
+          "Cat.dll": {}
+        }
+      },
+      "CatAst/1.0.0": {
+        "dependencies": {
+          "CatLexing": "1.0.0"
+        },
+        "runtime": {
+          "CatAst.dll": {}
+        }
+      },
+      "CatData/1.0.0": {
+        "runtime": {
+          "CatData.dll": {}
+        }
+      },
+      "CatDi/1.0.0": {
+        "runtime": {
+          "CatDi.dll": {}
+        }
+      },
+      "CatLexing/1.0.0": {
+        "runtime": {
+          "CatLexing.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Cat/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CatAst/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CatData/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CatDi/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CatLexing/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

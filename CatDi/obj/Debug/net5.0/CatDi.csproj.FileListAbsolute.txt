@@ -1,0 +1,12 @@
+C:\Users\siu\Cat\CatDi\bin\Debug\net5.0\CatDi.deps.json
+C:\Users\siu\Cat\CatDi\bin\Debug\net5.0\CatDi.dll
+C:\Users\siu\Cat\CatDi\bin\Debug\net5.0\ref\CatDi.dll
+C:\Users\siu\Cat\CatDi\bin\Debug\net5.0\CatDi.pdb
+C:\Users\siu\Cat\CatDi\obj\Debug\net5.0\CatDi.csproj.AssemblyReference.cache
+C:\Users\siu\Cat\CatDi\obj\Debug\net5.0\CatDi.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\siu\Cat\CatDi\obj\Debug\net5.0\CatDi.AssemblyInfoInputs.cache
+C:\Users\siu\Cat\CatDi\obj\Debug\net5.0\CatDi.AssemblyInfo.cs
+C:\Users\siu\Cat\CatDi\obj\Debug\net5.0\CatDi.csproj.CoreCompileInputs.cache
+C:\Users\siu\Cat\CatDi\obj\Debug\net5.0\CatDi.dll
+C:\Users\siu\Cat\CatDi\obj\Debug\net5.0\ref\CatDi.dll
+C:\Users\siu\Cat\CatDi\obj\Debug\net5.0\CatDi.pdb
