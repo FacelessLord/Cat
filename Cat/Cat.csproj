@@ -6,6 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Content Include="..\.gitignore">
+        <Link>.gitignore</Link>
+      </Content>
       <Content Include="code.ct">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
