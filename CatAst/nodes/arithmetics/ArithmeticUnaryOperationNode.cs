@@ -36,21 +36,5 @@ namespace Cat.ast.nodes.arithmetics
                 };
             }
         }
-
-        public enum ArithmeticOperation
-        {
-            Plus,
-            Minus,
-            Multiply,
-            Divide,
-            Equals,
-            NotEquals,
-            And,
-            Or,
-            At,
-            Hash,
-            Power,
-            Not,
-        }
     }
 }

@@ -47,6 +47,7 @@ namespace Cat.lexing.tokens
         public static readonly ITokenType QuestionMark = new OperatorTokenType(nameof(QuestionMark), "?");
         public static readonly ITokenType QuestionMarkEquals = new OperatorTokenType(nameof(QuestionMarkEquals), "?=");
         public static readonly ITokenType TwoQuestionMark = new OperatorTokenType(nameof(TwoQuestionMark), "??");
+        public static readonly ITokenType Tilda = new OperatorTokenType(nameof(TwoQuestionMark), "~");
 
         //todo move every SimpleTokenType to OperatorTokenType
         #endregion

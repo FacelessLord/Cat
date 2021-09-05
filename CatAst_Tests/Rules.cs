@@ -396,7 +396,7 @@ namespace CatAst_Tests
         {
             var tokens = new[]
             {
-                numberA, plus, numberB, minus, numberC, star, numberA, divide, numberB, @as, a, dot, b,
+                numberA, plus, plus, numberB, minus, minus, numberC, star, numberA, divide, numberB, @as, a, dot, b,
                 @is, c, dot, d
             };
 

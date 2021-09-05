@@ -20,7 +20,7 @@ namespace Cat.ast.nodes.arithmetics
         {
             public static ArithmeticOperation GetOperationFromTokenType(ITokenType type)
             {
-                return type.Name switch
+                return System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(type.Name) switch
                 {
                     nameof(TokenTypes.Plus) => ArithmeticOperation.Plus,
                     nameof(TokenTypes.Minus) => ArithmeticOperation.Minus,
@@ -35,26 +35,29 @@ namespace Cat.ast.nodes.arithmetics
                     nameof(TokenTypes.Circumflex) => ArithmeticOperation.Power,
                     nameof(TokenTypes.ExclamationMark) => ArithmeticOperation.Not,
                     nameof(TokenTypes.Percent) => ArithmeticOperation.Percent,
+                    nameof(TokenTypes.Is) => ArithmeticOperation.Is,
+                    nameof(TokenTypes.As) => ArithmeticOperation.As,
                     _ => throw new ArgumentOutOfRangeException()
                 };
             }
         }
-
-        public enum ArithmeticOperation
-        {
-            Percent,
-            Plus,
-            Minus,
-            Multiply,
-            Divide,
-            Equals,
-            NotEquals,
-            And,
-            Or,
-            At,
-            Hash,
-            Power,
-            Not,
-        }
+    }
+    public enum ArithmeticOperation
+    {
+        Percent,
+        Plus,
+        Minus,
+        Multiply,
+        Divide,
+        Equals,
+        NotEquals,
+        And,
+        Or,
+        At,
+        Hash,
+        Power,
+        Not,
+        Is,
+        As,
     }
 }
