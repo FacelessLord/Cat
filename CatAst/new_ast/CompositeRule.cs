@@ -25,6 +25,7 @@ namespace Cat.ast.new_ast
 
         public CompositeRule(string name)
         {
+            Name = name;
         }
 
         public void Fill(List<Func<IRule, RuleChain>> chains)
@@ -38,9 +39,10 @@ namespace Cat.ast.new_ast
         public INode Read(BufferedEnumerable<Token> tokens)
         {
             var depth = tokens.PushPointer();
-            foreach (var chain in Chains)
+            for (var i = 0; i < Chains.Count; i++)
             {
-                var node = chain(this).Read(tokens);
+                var chain = Chains[i](this);
+                var node = chain.Read(tokens);
                 if (node != null)
                 {
                     return node;
@@ -93,27 +95,40 @@ namespace Cat.ast.new_ast
             var recursiveRules = chains.Where(c => c.Rules[0] == rule);
 
             var tailRule = new CompositeRule(rule.Name + "-rTail");
+            var intermediateRule = new CompositeRule(rule.Name + "-inter");
             var ruleTails = recursiveRules
-                .SelectMany(c => ProcessTailChains(c, tailRule)).ToList();
+                .SelectMany(c => ProcessTailChains(c, tailRule, rule, intermediateRule)).ToList();
             tailRule.Fill(ruleTails);
-            
-            var intermediateRuleChains = chains.Where(c => c.Rules[0] != rule).SelectMany(c => ProcessHeaderChains(c, tailRule));
-            var intermediateRule = new CompositeRule(rule.Name+"-inter", intermediateRuleChains.ToList());
-            
-            return Rule.Named(rule.Name).With(Chain.StartWith(intermediateRule).CollectBy(nodes => collector((nodes[0] as NodeList)?.Nodes)));
+
+            var intermediateRuleChains =
+                chains.Where(c => c.Rules[0] != rule)
+                    .SelectMany(c => ProcessHeaderChains(c, tailRule, rule, intermediateRule));
+            intermediateRule.Fill(intermediateRuleChains.ToList());
+
+            return Rule.Named(rule.Name).With(Chain.StartWith(intermediateRule)
+                .CollectBy(nodes => collector(nodes[0] is NodeList nl ? nl.Nodes : new[] { nodes[0] })));
         }
 
-        private static IEnumerable<Func<IRule, RuleChain>> ProcessTailChains(RuleChain c, CompositeRule RuleTail)
+        private static IEnumerable<Func<IRule, RuleChain>> ProcessTailChains(RuleChain c, CompositeRule ruleTail,
+            CompositeRule mainRule, CompositeRule mainRuleReplacement)
         {
-            yield return _ => new RuleChain(c.Rules.Skip(1).Append(RuleTail).ToList(),
-                nodes => new NodeList(new[]{c.LeftRecursionCollector(nodes[..^1])}, nodes[^1] as NodeList));
-            yield return _ => new RuleChain(c.Rules.Skip(1).ToList(), nodes => new NodeList(new[]{c.LeftRecursionCollector(nodes)}));
+            yield return _ =>
+                new RuleChain(
+                    c.Rules.Skip(1).Select(r => r == mainRule ? mainRuleReplacement : r).Append(ruleTail).ToList(),
+                    nodes => new NodeList(new[] { c.LeftRecursionCollector(nodes[..^1]) }, nodes[^1] as NodeList));
+            yield return _ =>
+                new RuleChain(c.Rules.Skip(1).Select(r => r == mainRule ? mainRuleReplacement : r).ToList(),
+                    nodes => new NodeList(new[] { c.LeftRecursionCollector(nodes) }));
         }
-        private static IEnumerable<Func<IRule, RuleChain>> ProcessHeaderChains(RuleChain c, CompositeRule RuleTail)
+
+        private static IEnumerable<Func<IRule, RuleChain>> ProcessHeaderChains(RuleChain c, CompositeRule ruleTail,
+            CompositeRule mainRule, CompositeRule mainRuleReplacement)
         {
-            yield return _ => new RuleChain(c.Rules.Append(RuleTail).ToList(),
-                nodes => new NodeList(new[]{c.Collector(nodes[..^1])}, nodes[^1] as NodeList));
-            yield return _ => new RuleChain(c.Rules.ToList(), c.Collector);
+            yield return _ =>
+                new RuleChain(c.Rules.Select(r => r == mainRule ? mainRuleReplacement : r).Append(ruleTail).ToList(),
+                    nodes => new NodeList(new[] { c.Collector(nodes[..^1]) }, nodes[^1] as NodeList));
+            yield return _ =>
+                new RuleChain(c.Rules.Select(r => r == mainRule ? mainRuleReplacement : r).ToList(), c.Collector);
         }
     }
 }

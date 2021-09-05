@@ -73,7 +73,7 @@ namespace Cat.ast.new_ast
                 .Then(ID)
                 .Then(Token(Colon))
                 .Then(TypeName)
-                .Then(Token(TokenTypes.Equals))
+                .Then(Token(Set))
                 .Then(Expression)
                 .CollectBy(nodes => new VariableStatementNode(nodes[1], nodes[5], nodes[3])))
             .With(Chain.StartWith(Token(Let))
@@ -93,8 +93,26 @@ namespace Cat.ast.new_ast
             .With(Chain.StartWith(LetVarStatement)
                 .CollectBy(IdentityCollector));
 
+
+        private static CompositeRule ArithmeticExpressionRecursive = Rule.Named(nameof(ArithmeticExpression))
+            .With(_ => Chain.StartWith(_).Then(Token(Plus)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Minus)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Star)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Divide)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(Token(LParen)).Then(_).Then(Token(RParen)).CollectBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Is)).Then(TypeName).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(As)).Then(TypeName).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(Chain.StartWith(SimpleExpression).CollectBy(IdentityCollector));
+
+        
+        private static Func<INode[], INode> ArithmeticTreeCollector = ArithmeticTree.Collect;
+
+        public static IRule ArithmeticExpression = CompositeRule.FixLeftRecursion(ArithmeticExpressionRecursive, ArithmeticTreeCollector);
+
         public static IRule Expression = Rule.Named(nameof(Expression))
             .With(Chain.StartWith(SimpleExpression)
+                .CollectBy(IdentityCollector))
+            .With(Chain.StartWith(ArithmeticExpression)
                 .CollectBy(IdentityCollector));
         
         //todo create arithmetic expressions

@@ -18,16 +18,23 @@ namespace CatAst_Tests
         public static IRule Token(ITokenType type) => new TokenRule(type);
 
         private static Token colon = new Token(Colon, ":");
-        private static Token equals = new Token(TokenTypes.Equals, "=");
+        private static Token set = new Token(Set, "=");
+        private static Token equals = new Token(TokenTypes.Equals, "==");
         private static Token dot = new Token(Dot, ".");
         private static Token let = new Token(Let, "let");
         private static Token plus = new Token(Plus, "plus");
         private static Token minus = new Token(Minus, "minus");
+        private static Token lParen = new Token(LParen, "(");
+        private static Token rParen = new Token(RParen, ")");
         private static Token lBracket = new Token(LBracket, "[");
         private static Token rBracket = new Token(RBracket, "]");
         private static Token lBrace = new Token(LBrace, "{");
         private static Token rBrace = new Token(RBrace, "}");
         private static Token comma = new Token(Comma, ",");
+        private static Token star = new Token(Star, "*");
+        private static Token divide = new Token(Divide, "/");
+        private static Token @as = new Token(As, "as");
+        private static Token @is = new Token(TokenTypes.Is, "is");
 
         private static Token a = new Token(Id, "a");
         private static Token b = new Token(Id, "b");
@@ -35,7 +42,7 @@ namespace CatAst_Tests
         private static Token d = new Token(Id, "d");
 
         private static Token numberA = new Token(Number, "12215");
-        private static Token numberD = new Token(Number, "74373");
+        private static Token numberB = new Token(Number, "74373");
         private static Token numberC = new Token(Number, "9125");
 
         private static Token stringA = new Token(TokenTypes.String, "\"1gas2215\"");
@@ -180,7 +187,7 @@ namespace CatAst_Tests
         [Test]
         public void LetVarRule_Parses_IdNameWithTypeAndValue()
         {
-            var tokens = new[] { let, a, colon, b, dot, c, @equals, numberA };
+            var tokens = new[] { let, a, colon, b, dot, c, @set, numberA };
 
             var node = Rules.LetVarStatement.Read(new BufferedEnumerable<Token>(tokens));
 
@@ -222,7 +229,7 @@ namespace CatAst_Tests
         [Test]
         public void LetVarRule_Parses_IdNameWithValue()
         {
-            var tokens = new[] { let, a, @equals, b };
+            var tokens = new[] { let, a, @set, b };
 
             var node = Rules.LetVarStatement.Read(new BufferedEnumerable<Token>(tokens));
 
@@ -311,11 +318,15 @@ namespace CatAst_Tests
             listNode.Nodes[3].Should().BeOfType<IdNode>();
             ((IdNode) listNode.Nodes[3]).IdToken.Should().Be(a.Value);
         }
-        
+
         [Test]
         public void Literal_Parses_NestedList()
         {
-            var tokens = new[] { lBracket, stringB, comma, lBrace, a, colon, lBracket, numberC, rBracket, rBrace, comma, lBracket, boolTrue, rBracket, comma, a, rBracket };
+            var tokens = new[]
+            {
+                lBracket, stringB, comma, lBrace, a, colon, lBracket, numberC, rBracket, rBrace, comma, lBracket,
+                boolTrue, rBracket, comma, a, rBracket
+            };
 
             var node = Rules.Literal.Read(new BufferedEnumerable<Token>(tokens));
 
@@ -325,7 +336,7 @@ namespace CatAst_Tests
 
             listNode.Nodes[0].Should().BeOfType<StringNode>();
             listNode.Nodes[1].Should().BeOfType<ObjectLiteralNode>();
-            ((ObjectLiteralNode)listNode.Nodes[1]).Nodes[0].Expression.Should().BeOfType<ListNode>();
+            ((ObjectLiteralNode) listNode.Nodes[1]).Nodes[0].Expression.Should().BeOfType<ListNode>();
             listNode.Nodes[2].Should().BeOfType<ListNode>();
             listNode.Nodes[3].Should().BeOfType<IdNode>();
         }
@@ -378,6 +389,59 @@ namespace CatAst_Tests
             objectNode.Nodes[2].Expression.Should().BeOfType<ListNode>();
 
             objectNode.Nodes.Select(n => n.Id.Should().BeOfType<IdNode>()).Count().Should().Be(3);
+        }
+
+        [Test]
+        public void ArithmeticRule_Parses_NumberSum()
+        {
+            var tokens = new[]
+            {
+                numberA, plus, numberB, minus, numberC, star, numberA, divide, numberB, @as, a, dot, b,
+                @is, c, dot, d
+            };
+
+            var node = Rules.ArithmeticExpression.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<ObjectLiteralNode>();
+
+            var objectNode = (ObjectLiteralNode) node;
+
+            objectNode.Nodes[0].Expression.Should().BeOfType<StringNode>();
+            objectNode.Nodes[1].Expression.Should().BeOfType<ObjectLiteralNode>();
+            objectNode.Nodes[2].Expression.Should().BeOfType<ListNode>();
+
+            objectNode.Nodes.Select(n => n.Id.Should().BeOfType<IdNode>()).Count().Should().Be(3);
+        }
+
+        [Test]
+        public void Flatten_WorksProperly_On_NestedList()
+        {
+            var tokenNumberA = new TokenNode(numberA);
+            var tokenPlus = new TokenNode(plus);
+            var tokenNumberB = new TokenNode(numberB);
+            var node = new INode[]
+            {
+                tokenNumberA,
+                new CompositeRule.NodeList(new INode[]
+                    { tokenPlus, new CompositeRule.NodeList(new INode[] { tokenNumberB }) })
+            };
+
+            var flatNodes = ArithmeticTree.Flatten(node);
+            flatNodes.Count.Should().Be(3);
+            flatNodes[0].Should().Be(tokenNumberA);
+            flatNodes[1].Should().Be(tokenPlus);
+            flatNodes[2].Should().Be(tokenNumberB);
+        }
+
+        [Test]
+        public void Flatten_WorksProperly_On_SingleItemArray()
+        {
+            var tokenNumberA = new TokenNode(numberA);
+            var node = new INode[] { tokenNumberA };
+
+            var flatNodes = ArithmeticTree.Flatten(node);
+            flatNodes.Count.Should().Be(1);
+            flatNodes[0].Should().Be(tokenNumberA);
         }
     }
 }
