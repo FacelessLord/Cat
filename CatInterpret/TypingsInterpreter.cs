@@ -1,10 +1,10 @@
 ﻿using System;
-using Cat.ast;
-using Cat.ast.nodes;
 using Cat.data.types;
 using Cat.data.types.api;
 using Cat.data.types.primitives;
 using Cat.interpret.exceptions;
+using CatAst;
+using CatAst.nodes;
 
 namespace Cat.interpret
 {
@@ -27,7 +27,6 @@ namespace Cat.interpret
                 StringNode n => Interpret(n),
                 BoolNode n => Interpret(n),
                 VariableStatementNode n => Interpret(n),
-                TypeCastNode n => Interpret(n),
                 _ => throw new NotImplementedException($"Type {node.GetType().Name} is not interpretable")
             };
         }
@@ -82,10 +81,6 @@ namespace Cat.interpret
                 throw new CatTypeMismatchException(expressionType, varType);
 
             return varType;
-        }
-        public IDataType Interpret(TypeCastNode node)
-        {
-            return _typeStorage[((IdNode) node.Type).IdToken];
         }
     }
 }

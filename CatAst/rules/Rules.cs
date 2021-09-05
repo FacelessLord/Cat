@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cat.ast.nodes;
 using Cat.lexing.tokens;
+using CatAst.api;
+using CatAst.nodes;
 using static Cat.lexing.tokens.TokenTypes;
 
-namespace Cat.ast.new_ast
+namespace CatAst.rules
 {
     public class Rules
     {
@@ -95,35 +96,49 @@ namespace Cat.ast.new_ast
 
 
         private static CompositeRule ArithmeticExpressionRecursive = Rule.Named(nameof(ArithmeticExpression))
-            .With(_ => Chain.StartWith(_).Then(Token(Or)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(And)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(TokenTypes.Equals)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(NotEquals)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(Percent)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(Plus)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(Minus)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(Star)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(Divide)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(Circumflex)).Then(_).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(Token(LParen)).Then(_).Then(Token(RParen)).CollectBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(Is)).Then(TypeName).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
-            .With(_ => Chain.StartWith(_).Then(Token(As)).Then(TypeName).CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Or)).Then(_)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(And)).Then(_)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(TokenTypes.Equals)).Then(_)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(NotEquals)).Then(_)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Percent)).Then(_)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Plus)).Then(_)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Minus)).Then(_)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Star)).Then(_)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Divide)).Then(_)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Circumflex)).Then(_)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(Token(LParen)).Then(_).Then(Token(RParen))
+                .CollectBy(nodes => ArithmeticTreeCollector(((CompositeRule.NodeList) nodes[1]).Nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(Is)).Then(TypeName)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
+            .With(_ => Chain.StartWith(_).Then(Token(As)).Then(TypeName)
+                .CollectTailBy(nodes => new CompositeRule.NodeList(nodes)))
             .With(_ => Chain.StartWith(Token(Tilda)).Then(_).CollectBy(nodes => new CompositeRule.NodeList(nodes)))
             .With(_ => Chain.StartWith(Token(Plus)).Then(_).CollectBy(nodes => new CompositeRule.NodeList(nodes)))
             .With(_ => Chain.StartWith(Token(Minus)).Then(_).CollectBy(nodes => new CompositeRule.NodeList(nodes)))
             .With(Chain.StartWith(SimpleExpression).CollectBy(IdentityCollector));
 
-        
+
         private static Func<INode[], INode> ArithmeticTreeCollector = ArithmeticTree.Collect;
 
-        public static IRule ArithmeticExpression = CompositeRule.FixLeftRecursion(ArithmeticExpressionRecursive, ArithmeticTreeCollector);
+        public static IRule ArithmeticExpression =
+            CompositeRule.FixLeftRecursion(ArithmeticExpressionRecursive, ArithmeticTreeCollector);
 
         public static IRule Expression = Rule.Named(nameof(Expression))
             .With(Chain.StartWith(SimpleExpression)
                 .CollectBy(IdentityCollector))
             .With(Chain.StartWith(ArithmeticExpression)
                 .CollectBy(IdentityCollector));
-        
+
         //todo create arithmetic expressions
         // they all have to be in one rule with 
     }

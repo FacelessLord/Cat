@@ -1,4 +1,4 @@
-﻿namespace Cat.ast.nodes
+﻿namespace CatAst.nodes
 {
     public class PipelineOrNode : PipelineNode
     {

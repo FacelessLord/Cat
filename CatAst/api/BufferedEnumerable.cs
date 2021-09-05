@@ -1,14 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Cat.ast.api
+namespace CatAst.api
 {
     public class BufferedEnumerable<T> : IEnumerable<T>
     {
-        private List<T> _buffer = new();
-        private int _pointer = 0;
-        private Stack<int> pointerStack = new();
-        private IEnumerator<T> _wrapped;
+        private readonly List<T> _buffer = new();
+        private int _pointer;
+        private readonly Stack<int> _pointerStack = new();
+        private readonly IEnumerator<T> _wrapped;
         private bool _enumerableEnded;
 
         public BufferedEnumerable(IEnumerable<T> wrapped)
@@ -18,20 +18,20 @@ namespace Cat.ast.api
 
         public void ResetPointer()
         {
-            _pointer = pointerStack.Count > 0 ? pointerStack.Peek() : 0;
+            _pointer = _pointerStack.Count > 0 ? _pointerStack.Peek() : 0;
             _enumerableEnded = _buffer.Count == 0;
         }
 
         public int PushPointer()
         {
-            pointerStack.Push(_pointer);
-            return pointerStack.Count;
+            _pointerStack.Push(_pointer);
+            return _pointerStack.Count;
         }
 
         public void PopPointer(int depth)
         {
-            while (pointerStack.Count >= depth)
-                pointerStack.Pop();
+            while (_pointerStack.Count >= depth)
+                _pointerStack.Pop();
         }
 
         private (T, bool) Next()
@@ -53,7 +53,7 @@ namespace Cat.ast.api
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new BufferedEnumerator<T>(this);
+            return new BufferedEnumerator(this);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -61,7 +61,7 @@ namespace Cat.ast.api
             return GetEnumerator();
         }
 
-        class BufferedEnumerator<T> : IEnumerator<T>
+        private class BufferedEnumerator : IEnumerator<T>
         {
             private readonly BufferedEnumerable<T> _bufferedEnumerable;
 

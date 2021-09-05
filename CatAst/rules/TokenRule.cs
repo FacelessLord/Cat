@@ -1,9 +1,8 @@
-using System.Linq;
-using Cat.ast.api;
-using Cat.ast.nodes;
 using Cat.lexing.tokens;
+using CatAst.api;
+using CatAst.nodes;
 
-namespace Cat.ast.new_ast
+namespace CatAst.rules
 {
     public class TokenRule : IRule
     {

@@ -1,54 +1,54 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cat.ast.api;
 using Cat.lexing.tokens;
+using CatAst.api;
 
-namespace Cat.ast.new_ast
+namespace CatAst.rules
 {
     /**
-     * Equivelent to all productions for non-terminal
+     * Equivalent to all productions for non-terminal
      */
     public class CompositeRule : IRule
     {
-        public string Name { get; }
-        public List<Func<IRule, RuleChain>> Chains { get; private set; }
+        private string Name { get; }
+        private List<Func<IRule, RuleChain>> Chains { get; set; }
 
-        public bool Filled = false;
+        private bool _filled;
 
         public CompositeRule(string name, List<Func<IRule, RuleChain>> chains)
         {
             Name = name;
             Chains = chains;
-            Filled = true;
+            _filled = true;
         }
 
-        public CompositeRule(string name)
+        private CompositeRule(string name)
         {
             Name = name;
         }
 
-        public void Fill(List<Func<IRule, RuleChain>> chains)
+        private void Fill(List<Func<IRule, RuleChain>> chains)
         {
-            if (Filled)
+            if (_filled)
                 throw new InvalidOperationException();
-            Filled = true;
+            _filled = true;
             Chains = chains;
         }
 
         public INode Read(BufferedEnumerable<Token> tokens)
         {
             var depth = tokens.PushPointer();
-            for (var i = 0; i < Chains.Count; i++)
+            foreach (var chainGenerator in Chains)
             {
-                var chain = Chains[i](this);
+                var chain = chainGenerator(this);
                 var node = chain.Read(tokens);
                 if (node != null)
                 {
                     return node;
                 }
 
-                tokens.PopPointer(depth + 1); // reseting to state before chain started reading
+                tokens.PopPointer(depth + 1); // resetting to state before chain started reading
                 tokens.ResetPointer();
             }
 
@@ -59,7 +59,7 @@ namespace Cat.ast.new_ast
 
         public CompositeRule With(RuleChain chain)
         {
-            Chains.Add((thisRule) => chain);
+            Chains.Add(_ => chain);
             return this;
         }
 

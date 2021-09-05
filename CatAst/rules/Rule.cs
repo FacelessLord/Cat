@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using CatAst.api;
 
-namespace Cat.ast.new_ast
+namespace CatAst.rules
 {
     public static class Rule
     {
@@ -13,7 +14,7 @@ namespace Cat.ast.new_ast
 
     public class CompositeRuleNamingConfig
     {
-        public string Name { get; }
+        private string Name { get; }
 
         public CompositeRuleNamingConfig(string name)
         {
@@ -22,7 +23,7 @@ namespace Cat.ast.new_ast
 
         public CompositeRule With(RuleChain chain)
         {
-            return new CompositeRule(Name, new List<Func<IRule, RuleChain>> { (rule) => chain });
+            return new CompositeRule(Name, new List<Func<IRule, RuleChain>> { _ => chain });
         }
 
         public CompositeRule With(Func<IRule, RuleChain> chain)

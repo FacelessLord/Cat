@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Cat.ast.api;
 using Cat.lexing.tokens;
+using CatAst.api;
 
-namespace Cat.ast.new_ast
+namespace CatAst.rules
 {
     public class RuleChain
     {

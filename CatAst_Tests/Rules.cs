@@ -1,14 +1,15 @@
 using System;
 using System.Linq;
-using Cat.ast;
-using Cat.ast.api;
-using Cat.ast.new_ast;
-using Cat.ast.nodes;
 using Cat.lexing.tokens;
+using CatAst;
+using CatAst.api;
+using CatAst.nodes;
+using CatAst.nodes.arithmetics;
+using CatAst.rules;
 using FluentAssertions;
 using NUnit.Framework;
 using static Cat.lexing.tokens.TokenTypes;
-using IRule = Cat.ast.new_ast.IRule;
+using IRule = CatAst.api.IRule;
 
 namespace CatAst_Tests
 {
@@ -396,21 +397,60 @@ namespace CatAst_Tests
         {
             var tokens = new[]
             {
-                numberA, plus, plus, numberB, minus, minus, numberC, star, numberA, divide, numberB, @as, a, dot, b,
+                numberA, plus, lParen, plus, numberB, minus, minus, numberC, rParen, star, numberA, divide, numberB, @as, a, dot, b,
                 @is, c, dot, d
             };
 
             var node = Rules.ArithmeticExpression.Read(new BufferedEnumerable<Token>(tokens));
 
-            node.Should().BeOfType<ObjectLiteralNode>();
+            node.Should().BeOfType<ArithmeticBinaryOperationNode>();
 
-            var objectNode = (ObjectLiteralNode) node;
+            var node1 = (ArithmeticBinaryOperationNode) node;
 
-            objectNode.Nodes[0].Expression.Should().BeOfType<StringNode>();
-            objectNode.Nodes[1].Expression.Should().BeOfType<ObjectLiteralNode>();
-            objectNode.Nodes[2].Expression.Should().BeOfType<ListNode>();
+            node1.Operation.Should().Be(ArithmeticOperation.Plus);
+            node1.A.Should().BeOfType<NumberNode>();
+            (node1.A as NumberNode)!.NumberToken.Should().Be(numberA.Value);
+            node1.B.Should().BeOfType<ArithmeticBinaryOperationNode>();
+            var node2 = (ArithmeticBinaryOperationNode) node1.B;
 
-            objectNode.Nodes.Select(n => n.Id.Should().BeOfType<IdNode>()).Count().Should().Be(3);
+            node2.Operation.Should().Be(ArithmeticOperation.Divide);
+            node2.A.Should().BeOfType<ArithmeticBinaryOperationNode>();
+            node2.B.Should().BeOfType<ArithmeticBinaryOperationNode>();
+
+            var node3 = (ArithmeticBinaryOperationNode) node2.A;
+            node3.Operation.Should().Be(ArithmeticOperation.Multiply);
+            node3.A.Should().BeOfType<ArithmeticBinaryOperationNode>();
+            node3.B.Should().BeOfType<NumberNode>();
+            var node5 = (ArithmeticBinaryOperationNode) node3.A;
+            node5.Operation.Should().Be(ArithmeticOperation.Minus);
+            node5.A.Should().BeOfType<ArithmeticUnaryOperationNode>();
+            node5.B.Should().BeOfType<ArithmeticUnaryOperationNode>();
+            var node7 = ((ArithmeticUnaryOperationNode) node5.A);
+            node7.Operation.Should().Be(ArithmeticOperation.Plus);
+            node7.A.Should().BeOfType<NumberNode>();
+            ((NumberNode)node7.A).NumberToken.Should().Be(numberB.Value);
+            var node6 = ((ArithmeticUnaryOperationNode) node5.B);
+            node6.Operation.Should().Be(ArithmeticOperation.Minus);
+            node6.A.Should().BeOfType<NumberNode>();
+            ((NumberNode)node6.A).NumberToken.Should().Be(numberC.Value);
+
+            var node4 = (ArithmeticBinaryOperationNode) node2.B;
+            node4.Operation.Should().Be(ArithmeticOperation.Is);
+            node4.A.Should().BeOfType<ArithmeticBinaryOperationNode>();
+            node4.B.Should().BeOfType<IdNode>();
+
+            var node8 = (ArithmeticBinaryOperationNode) node4.A;
+            node8.Operation.Should().Be(ArithmeticOperation.As);
+            node8.A.Should().BeOfType<NumberNode>();
+            node8.B.Should().BeOfType<IdNode>();
+
+            var node9 = (NumberNode) node8.A;
+            node9.NumberToken.Should().Be(numberB.Value);
+            var node10 = (IdNode) node8.B;
+            node10.IdToken.Should().Be("a.b");
+
+            var node11 = (IdNode) node4.B;
+            node11.IdToken.Should().Be("c.d");
         }
 
         [Test]

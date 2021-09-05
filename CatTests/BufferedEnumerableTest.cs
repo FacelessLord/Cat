@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Cat.ast.api;
+using CatAst.api;
 using FluentAssertions;
 using NUnit.Framework;
 

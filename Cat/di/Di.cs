@@ -1,5 +1,4 @@
-﻿using Cat.ast;
-using Cat.data.types;
+﻿using Cat.data.types;
 using Cat.lexing;
 using CatDi.di;
 

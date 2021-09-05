@@ -1,6 +1,6 @@
 ﻿using Cat.lexing.tokens;
 
-namespace Cat.ast.nodes
+namespace CatAst.nodes
 {
     public class TokenNode : INode
     {

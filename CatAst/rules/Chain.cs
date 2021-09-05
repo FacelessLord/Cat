@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using CatAst.api;
 
-namespace Cat.ast.new_ast
+namespace CatAst.rules
 {
-    public class Chain
+    public static class Chain
     {
         public static ChainConfig StartWith(IRule rule)
         {
@@ -13,7 +14,7 @@ namespace Cat.ast.new_ast
 
     public class ChainConfig
     {
-        public List<IRule> Rules { get; }
+        private List<IRule> Rules { get; }
 
         public ChainConfig(IRule rule)
         {

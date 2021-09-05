@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Cat.ast.nodes
+namespace CatAst.nodes
 {
     public class ExpressionListNode : INode
     {

@@ -1,4 +1,4 @@
-﻿namespace Cat.ast
+﻿namespace CatAst
 {
     public interface INode
     {

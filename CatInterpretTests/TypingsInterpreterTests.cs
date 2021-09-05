@@ -1,13 +1,13 @@
 using System;
-using Cat.ast;
-using Cat.ast.api;
-using Cat.ast.new_ast;
 using Cat.data.types;
 using Cat.data.types.api;
 using Cat.data.types.primitives;
 using Cat.interpret;
 using Cat.lexing;
 using Cat.lexing.tokens;
+using CatAst;
+using CatAst.api;
+using CatAst.rules;
 using CatDi.di;
 using FluentAssertions;
 using NUnit.Framework;

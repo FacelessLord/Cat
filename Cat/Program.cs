@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using Cat.ast;
 using Cat.lexing;
 
 #nullable enable

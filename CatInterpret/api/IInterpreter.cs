@@ -1,4 +1,4 @@
-﻿using Cat.ast;
+﻿using CatAst;
 
 namespace Cat.interpret
 {

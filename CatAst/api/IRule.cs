@@ -1,7 +1,6 @@
-﻿using Cat.ast.api;
-using Cat.lexing.tokens;
+﻿using Cat.lexing.tokens;
 
-namespace Cat.ast.new_ast
+namespace CatAst.api
 {
     public interface IRule
     {
