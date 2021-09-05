@@ -1,4 +1,4 @@
-﻿using Cat.lexing.tokens;
+﻿using CatLexing.tokens;
 
 namespace CatAst.api
 {

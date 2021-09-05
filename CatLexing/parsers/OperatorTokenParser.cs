@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Cat.lexing.tokens;
+using CatLexing.tokens;
 
-namespace Cat.lexing.parsers
+namespace CatLexing.parsers
 {
     public class OperatorTokenParser : IParser
     {

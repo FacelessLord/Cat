@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Cat.lexing.tokens
+namespace CatLexing.tokens
 {
     public static class TokenTypes
     {
@@ -36,6 +36,7 @@ namespace Cat.lexing.tokens
         public static readonly ITokenType Percent = new OperatorTokenType(nameof(Percent), "%");
         public static readonly ITokenType PercentEquals = new OperatorTokenType(nameof(PercentEquals), "%=");
         public static readonly ITokenType Circumflex = new OperatorTokenType(nameof(Circumflex), "^");
+        public static readonly ITokenType Power = new OperatorTokenType(nameof(Power), "**");
         public static readonly ITokenType CircumflexEquals = new OperatorTokenType(nameof(CircumflexEquals), "^=");
         public static readonly ITokenType Set = new OperatorTokenType(nameof(Set), "=");
         public static readonly ITokenType Equals = new OperatorTokenType(nameof(Equals), "==");

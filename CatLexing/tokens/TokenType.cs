@@ -1,4 +1,4 @@
-﻿namespace Cat.lexing.tokens
+﻿namespace CatLexing.tokens
 {
     public interface ITokenType
     {
@@ -8,17 +8,6 @@
     public class UnknownTokenType : ITokenType
     {
         public string Name { get; } = "Unknown";
-    }
-    public class RepetitionVariantTokenType : ITokenType
-    {
-        public readonly string Terminal;
-
-        public RepetitionVariantTokenType(string name, string terminal)
-        {
-            Terminal = terminal;
-            Name = name;
-        }
-        public string Name { get; }
     }
 
     public class SimpleTokenType : ITokenType

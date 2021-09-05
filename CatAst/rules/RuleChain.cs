@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Cat.lexing.tokens;
 using CatAst.api;
+using CatLexing.tokens;
 
 namespace CatAst.rules
 {

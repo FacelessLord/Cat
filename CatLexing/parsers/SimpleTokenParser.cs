@@ -1,7 +1,7 @@
 ﻿using System;
-using Cat.lexing.tokens;
+using CatLexing.tokens;
 
-namespace Cat.lexing.parsers
+namespace CatLexing.parsers
 {
     public class SimpleTokenParser : IParser
     {

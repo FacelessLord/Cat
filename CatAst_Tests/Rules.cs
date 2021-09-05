@@ -1,14 +1,14 @@
 using System;
 using System.Linq;
-using Cat.lexing.tokens;
 using CatAst;
 using CatAst.api;
 using CatAst.nodes;
 using CatAst.nodes.arithmetics;
 using CatAst.rules;
+using CatLexing.tokens;
 using FluentAssertions;
 using NUnit.Framework;
-using static Cat.lexing.tokens.TokenTypes;
+using static CatLexing.tokens.TokenTypes;
 using IRule = CatAst.api.IRule;
 
 namespace CatAst_Tests

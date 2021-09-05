@@ -1,5 +1,5 @@
 ﻿using System;
-using Cat.lexing.tokens;
+using CatLexing.tokens;
 
 namespace CatAst.nodes
 {

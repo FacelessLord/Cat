@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CatDi.di.exceptions;
 
 namespace CatDi.di
 {
@@ -11,17 +12,29 @@ namespace CatDi.di
         public T Resolve<T>()
         {
             var resolver = new Resolver(this);
-            return (T) Factories[typeof(T)].First().Create(resolver);
+
+            var targetType = typeof(T);
+            if (!Factories.ContainsKey(targetType))
+                throw new CatTypeNotRegisteredException(targetType);
+
+            return (T) Factories[targetType].First().Create(resolver);
         }
 
         public T Resolve<T>(string name)
         {
             var resolver = new Resolver(this);
-            return (T) Factories[typeof(T)].Single(f => f.HasName && f.Name == name).Create(resolver);
+            var targetType = typeof(T);
+            if (!Factories.ContainsKey(targetType))
+                throw new CatTypeNotRegisteredException(targetType);
+
+            return (T) Factories[targetType].Single(f => f.HasName && f.Name == name).Create(resolver);
         }
 
         public object Resolve(Type t, Resolver resolver)
         {
+            if (!Factories.ContainsKey(t))
+                throw new CatTypeNotRegisteredException(t);
+            
             return Factories[t].First().Create(resolver);
         }
 

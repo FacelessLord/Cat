@@ -10,6 +10,7 @@ namespace CatAst.nodes.arithmetics
         Equals,
         NotEquals,
         And,
+        Xor,
         Or,
         At,
         Hash,

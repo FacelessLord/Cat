@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Cat.lexing.parsers;
-using Cat.lexing.tokens;
+using CatLexing.parsers;
+using CatLexing.tokens;
 
-namespace Cat.lexing
+namespace CatLexing
 {
     public interface ILexer
     {

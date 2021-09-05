@@ -5,6 +5,7 @@ using Cat.data.types.primitives;
 using Cat.interpret.exceptions;
 using CatAst;
 using CatAst.nodes;
+using CatAst.nodes.arithmetics;
 
 namespace Cat.interpret
 {
@@ -12,11 +13,13 @@ namespace Cat.interpret
     {
         private readonly ITypeStorage _typeStorage;
         private readonly ITypingsStorage _typings;
+        private readonly ArithmeticExpressionTypingsInterpreter _arithmeticInterpreter;
 
-        public TypingsInterpreter(ITypeStorage typeStorage, ITypingsStorage typings)
+        public TypingsInterpreter(ITypeStorage typeStorage, ITypingsStorage typings, ArithmeticExpressionTypingsInterpreter arithmeticInterpreter)
         {
             _typeStorage = typeStorage;
             _typings = typings;
+            _arithmeticInterpreter = arithmeticInterpreter;
         }
 
         public IDataType Interpret(INode node)
@@ -27,6 +30,7 @@ namespace Cat.interpret
                 StringNode n => Interpret(n),
                 BoolNode n => Interpret(n),
                 VariableStatementNode n => Interpret(n),
+                ArithmeticBinaryOperationNode n => Interpret(n),
                 _ => throw new NotImplementedException($"Type {node.GetType().Name} is not interpretable")
             };
         }
@@ -81,6 +85,11 @@ namespace Cat.interpret
                 throw new CatTypeMismatchException(expressionType, varType);
 
             return varType;
+        }
+
+        public IDataType Interpret(ArithmeticBinaryOperationNode abon)
+        {
+            return _arithmeticInterpreter.Interpret(abon, this);
         }
     }
 }

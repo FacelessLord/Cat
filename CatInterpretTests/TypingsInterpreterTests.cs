@@ -3,12 +3,12 @@ using Cat.data.types;
 using Cat.data.types.api;
 using Cat.data.types.primitives;
 using Cat.interpret;
-using Cat.lexing;
-using Cat.lexing.tokens;
 using CatAst;
 using CatAst.api;
 using CatAst.rules;
 using CatDi.di;
+using CatLexing;
+using CatLexing.tokens;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -29,6 +29,7 @@ namespace CatInterpretTests
             Kernel.Register<TypeStorage>().AsSingleton<ITypeStorage>();
             Kernel.Register<TypingsStorage>().As<ITypingsStorage>();
             Kernel.Register<TypingsInterpreter>().As<IInterpreter<IDataType>>();
+            Kernel.Register<ArithmeticExpressionTypingsInterpreter>().As<ArithmeticExpressionTypingsInterpreter>();
             Kernel.Register<Lexer>().As<ILexer>();
             Kernel.Register<Func<IRule, string, INode>>(resolver => (rule, text) =>
                     rule.Read(new BufferedEnumerable<Token>(resolver.Resolve<ILexer>().ParseCode(text))))
@@ -118,6 +119,7 @@ namespace CatInterpretTests
         [Test]
         public void Interprets_TypeCast_As_TargetType()
         {
+            //loses typecast :c
             var node = Parse(Rules.Expression, "244 as system.Bool");
             var resolvedType = Interpreter.Interpret(node);
 

@@ -1,6 +1,6 @@
 ﻿using Cat.data.types;
-using Cat.lexing;
 using CatDi.di;
+using CatLexing;
 
 namespace Cat.di
 {

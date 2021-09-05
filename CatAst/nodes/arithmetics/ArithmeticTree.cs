@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using Cat.lexing.tokens;
 using CatAst.exceptions;
 using CatAst.nodes;
 using CatAst.nodes.arithmetics;
-using static Cat.lexing.tokens.TokenTypes;
+using CatLexing.tokens;
+using static CatLexing.tokens.TokenTypes;
 
 namespace CatAst.rules
 {
@@ -22,7 +22,7 @@ namespace CatAst.rules
         private static readonly List<HashSet<ITokenType>> Operations = new List<HashSet<ITokenType>>()
         {
             new() { Is, As }, new() { Circumflex }, new() { Star, Divide }, new() { Plus, Minus }, new() { Percent },
-            new() { TokenTypes.Equals, NotEquals }, new() { And }, new() { Or }
+            new() { TokenTypes.Equals, NotEquals }, new() { Circumflex }, new() { And }, new() { Or }
         };
 
         public static INode Collect(INode[] nodes)

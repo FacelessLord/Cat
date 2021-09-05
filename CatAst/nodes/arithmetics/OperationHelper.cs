@@ -1,6 +1,6 @@
 using System;
 using System.Globalization;
-using Cat.lexing.tokens;
+using CatLexing.tokens;
 
 namespace CatAst.nodes.arithmetics
 {

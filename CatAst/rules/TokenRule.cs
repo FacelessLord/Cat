@@ -1,6 +1,6 @@
-using Cat.lexing.tokens;
 using CatAst.api;
 using CatAst.nodes;
+using CatLexing.tokens;
 
 namespace CatAst.rules
 {

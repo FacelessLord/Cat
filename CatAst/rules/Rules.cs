@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cat.lexing.tokens;
 using CatAst.api;
 using CatAst.nodes;
-using static Cat.lexing.tokens.TokenTypes;
+using CatLexing.tokens;
+using static CatLexing.tokens.TokenTypes;
 
 namespace CatAst.rules
 {

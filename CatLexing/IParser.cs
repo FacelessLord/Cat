@@ -1,7 +1,7 @@
 ﻿using System;
-using Cat.lexing.tokens;
+using CatLexing.tokens;
 
-namespace Cat.lexing
+namespace CatLexing
 {
     public interface IParser
     {

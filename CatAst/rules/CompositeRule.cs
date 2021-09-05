@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cat.lexing.tokens;
 using CatAst.api;
+using CatLexing.tokens;
 
 namespace CatAst.rules
 {
@@ -12,7 +12,7 @@ namespace CatAst.rules
     public class CompositeRule : IRule
     {
         private string Name { get; }
-        private List<Func<IRule, RuleChain>> Chains { get; set; }
+        public List<Func<IRule, RuleChain>> Chains { get; set; }
 
         private bool _filled;
 

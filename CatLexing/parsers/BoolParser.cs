@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using Cat.lexing.tokens;
+using CatLexing.tokens;
 
-namespace Cat.lexing.parsers
+namespace CatLexing.parsers
 {
     public class BoolParser : IParser
     {

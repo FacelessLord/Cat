@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cat.lexing.tokens
+namespace CatLexing.tokens
 {
     public class Token
     {
