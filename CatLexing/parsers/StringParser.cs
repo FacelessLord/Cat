@@ -6,7 +6,7 @@ namespace CatLexing.parsers
 {
     public class StringParser : IParser
     {
-        public void Parse(in string text, Action<Token, int> tokenConsumer)
+        public (Token token, int length)? Parse(in string text)
         {
             var escaped = false;
             var valueBuilder = new StringBuilder();
@@ -25,8 +25,7 @@ namespace CatLexing.parsers
                 {
                     var value = valueBuilder.ToString();
                     var token = new Token(TokenTypes.String, value);
-                    tokenConsumer(token, value.Length + 2+escapedCount);
-                    return;
+                    return (token, value.Length + 2 + escapedCount);
                 }
 
                 escaped = text[i] == '\\';
@@ -35,6 +34,8 @@ namespace CatLexing.parsers
                 else
                     escapedCount++;
             }
+
+            return null;
         }
 
         public bool CanStartWith(char character)

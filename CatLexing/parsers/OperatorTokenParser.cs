@@ -15,7 +15,7 @@ namespace CatLexing.parsers
             _operators = operators.ToList();
         }
 
-        public void Parse(in string text, Action<Token, int> tokenConsumer)
+        public (Token token, int length)? Parse(in string text)
         {
             var preOperator = _operators.ToList();
             var dOperatorWrongCharacter = new List<OperatorTokenType>();
@@ -49,12 +49,13 @@ namespace CatLexing.parsers
             if (dOperatorTooShort.Count == 1)
             {
                 var tokenType = dOperatorTooShort.Single();
-                tokenConsumer(new Token(tokenType, tokenType.Terminal), tokenType.Terminal.Length);
-                return;
+                return (new Token(tokenType, tokenType.Terminal), tokenType.Terminal.Length);
             }
 
             if (dOperatorTooShort.Count > 1)
                 throw new AmbiguousMatchException("Can't decide which token to take from \"" + text[..(Math.Min(10, text.Length))] + "\"");
+            
+            return null;
         }
 
         public bool CanStartWith(char character)

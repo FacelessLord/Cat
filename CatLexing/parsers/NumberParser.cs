@@ -6,12 +6,12 @@ namespace CatLexing.parsers
 {
     public class NumberParser : IParser
     {
-        public static HashSet<char> FIRST = new() {'-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        public static HashSet<char> FIRST = new() { '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        public void Parse(in string text, Action<Token, int> tokenConsumer)
+        public (Token token, int length)? Parse(in string text)
         {
             if (!text.StartsWith('-') && !char.IsDigit(text[0]) && text[0] != '.')
-                return;
+                return null;
 
             var foundMinus = text.StartsWith('-');
             var foundDot = false;
@@ -25,8 +25,7 @@ namespace CatLexing.parsers
                     if (foundDot || !char.IsDigit(text[i + 1]))
                     {
                         var token = new Token(TokenTypes.Number, text[0..i]);
-                        tokenConsumer(token, i);
-                        return;
+                        return (token, i);
                     }
 
                     foundDot = true;
@@ -35,13 +34,13 @@ namespace CatLexing.parsers
                 }
 
                 if (foundMinus && i == 1)
-                    return;
+                    return null;
+
                 var token2 = new Token(TokenTypes.Number, text[0..i]);
-                tokenConsumer(token2, i);
-                return;
+                return (token2, i);
             }
 
-            tokenConsumer(new Token(TokenTypes.Number, text), text.Length);
+            return (new Token(TokenTypes.Number, text), text.Length);
         }
 
         public bool CanStartWith(char character)

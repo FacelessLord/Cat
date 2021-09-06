@@ -1,8 +1,11 @@
 using System;
+using Cat.data.objects.api;
+using Cat.data.properties;
 using Cat.data.types;
 using Cat.data.types.api;
 using Cat.data.types.primitives;
 using Cat.interpret;
+using Cat.interpret.exceptions;
 using CatAst;
 using CatAst.api;
 using CatAst.rules;
@@ -32,7 +35,7 @@ namespace CatInterpretTests
             Kernel.Register<ArithmeticExpressionTypingsInterpreter>().As<ArithmeticExpressionTypingsInterpreter>();
             Kernel.Register<Lexer>().As<ILexer>();
             Kernel.Register<Func<IRule, string, INode>>(resolver => (rule, text) =>
-                    rule.Read(new BufferedEnumerable<Token>(resolver.Resolve<ILexer>().ParseCode(text))))
+                    rule.Read(new BufferedEnumerable<Token>(resolver.Resolve<ILexer>().ParseCode("test.cat",text.Split("\n")))))
                 .As<Func<IRule, string, INode>>();
         }
 
@@ -119,7 +122,6 @@ namespace CatInterpretTests
         [Test]
         public void Interprets_TypeCast_As_TargetType()
         {
-            //loses typecast :c
             var node = Parse(Rules.Expression, "244 as system.Bool");
             var resolvedType = Interpreter.Interpret(node);
 
@@ -134,6 +136,16 @@ namespace CatInterpretTests
 
             resolvedType.Should().Be(TypeStorage[Primitives.Number]);
         }
+
+        [Test]
+        public void Throws_When_Variable_CantBeCastTo_TargetType()
+        {
+            TypeStorage.GetOrCreateType("test.out", () => new UncastableDataType());
+            var node = Parse(Rules.Expression, "244 as test.out");
+            Func<IDataType> typeResolving = () => Interpreter.Interpret(node);
+
+            typeResolving.Should().Throw<CatTypeMismatchException>();
+        }
         // [Test]
         // public void Interprets_VariableToVariable_TypeCast_As_TargetType()
         // {
@@ -142,5 +154,28 @@ namespace CatInterpretTests
         //
         //     resolvedType.Should().Be(TypeStorage[Primitives.Bool]);
         // }
+    }
+
+    class UncastableDataType : DataType
+    {
+        public UncastableDataType() : base("out", "test.out")
+        {
+            Properties.Add(new DataProperty(this, "testProp"));
+        }
+
+        public override void PopulateObject(IDataObject dataObject)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IDataObject CreateInstance(params object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IDataObject NewInstance(params object[] args)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

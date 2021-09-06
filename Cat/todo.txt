@@ -1,2 +1,10 @@
 ### ToDo
+* Tracking token positions to enable logging errors with positions in file
+* Pick best rule chain when nothing succeeds and drop excess token and missed rules in chain
 * Interpreting literals as DataObjects
+* Interpreting Arithmetic operations
+* Modules
+* think about the way operations for type T declared
+    - only allowed operands are T and it's subtypes (with manual cast if needed)
+    - only allowed operands are T and it's subtypes (with auto cast if needed). Need to know about modules
+     

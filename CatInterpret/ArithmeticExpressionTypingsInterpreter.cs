@@ -1,6 +1,7 @@
 using System;
 using Cat.data.types;
 using Cat.data.types.api;
+using Cat.data.types.primitives;
 using Cat.interpret.exceptions;
 using CatAst;
 using CatAst.nodes;
@@ -31,19 +32,24 @@ namespace Cat.interpret
             };
         }
 
-        public IDataType Interpret(ArithmeticBinaryOperationNode abon, IInterpreter<IDataType> mainInterpreter)
+        private IDataType Interpret(ArithmeticBinaryOperationNode abon, IInterpreter<IDataType> mainInterpreter)
         {
-            if (abon.Operation == ArithmeticOperation.Is || abon.Operation == ArithmeticOperation.As)
+            switch (abon.Operation)
             {
-                var typeName = ((IdNode) abon.B).IdToken;
-                var valueType = mainInterpreter.Interpret(abon.A);
+                case ArithmeticOperation.Is:
+                    return _typeStorage[Primitives.Bool];
+                case ArithmeticOperation.As:
+                {
+                    var typeName = ((IdNode) abon.B).IdToken;
+                    var valueType = mainInterpreter.Interpret(abon.A);
 
-                var targetType = _typeStorage[typeName];
+                    var targetType = _typeStorage[typeName];
 
-                if (_typeStorage.IsTypeAssignableFrom(targetType, valueType))
-                    return targetType;
+                    if (_typeStorage.IsTypeAssignableFrom(targetType, valueType))
+                        return targetType;
 
-                throw new CatTypeMismatchException(valueType, targetType);
+                    throw new CatTypeMismatchException(valueType, targetType);
+                }
             }
 
             var aType = mainInterpreter.Interpret(abon.A);
@@ -51,7 +57,7 @@ namespace Cat.interpret
             return null;
         }
 
-        public IDataType Interpret(ArithmeticUnaryOperationNode auon, IInterpreter<IDataType> mainInterpreter)
+        private IDataType Interpret(ArithmeticUnaryOperationNode auon, IInterpreter<IDataType> mainInterpreter)
         {
             return null;
         }

@@ -2,6 +2,7 @@ using System;
 using CatLexing.parsers;
 using CatLexing.tokens;
 using FakeItEasy;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace CatTests
@@ -14,7 +15,7 @@ namespace CatTests
         public Lazy<IdParser> idParser = new(() => new IdParser());
 
         //todo
-        public Lazy<SimpleTokenParser> simpleTokenParser(SimpleTokenType token) => 
+        public Lazy<SimpleTokenParser> simpleTokenParser(SimpleTokenType token) =>
             new(() => new SimpleTokenParser(token));
 
         public static Action<Token, int> DebugConsumer =
@@ -32,13 +33,14 @@ namespace CatTests
             var parser = numberParser.Value;
             var expected = new Token(TokenTypes.Number, value);
 
-            var Consumer = A.Fake<Action<Token, int>>();
+            var result = parser.Parse(value);
 
-            parser.Parse(value, Consumer);
+            result.HasValue.Should().BeTrue();
 
-            A.CallTo(Consumer)
-                .WhenArgumentsMatch(f => f[0].Equals(expected) && f[1].Equals(value.Length))
-                .MustHaveHappened(1, Times.Exactly);
+            var (token, length) = result!.Value;
+
+            token.Should().Be(expected);
+            length.Should().Be(value.Length);
         }
 
         [Test]
@@ -51,15 +53,11 @@ namespace CatTests
         public void NumberParser_DoesntParse(string value)
         {
             var parser = numberParser.Value;
-            var expected = new Token(TokenTypes.Number, value);
+            var expectedToken = new Token(TokenTypes.Number, value);
 
-            var Consumer = A.Fake<Action<Token, int>>();
+            var result = parser.Parse(value);
 
-            parser.Parse(value, Consumer);
-
-            A.CallTo(Consumer)
-                .WhenArgumentsMatch(f => f[0].Equals(expected) && f[1].Equals(value.Length))
-                .MustHaveHappened(0, Times.Exactly);
+            (!result.HasValue || !result!.Value.token.Equals(expectedToken)).Should().BeTrue();
         }
 
         [Test]
@@ -74,14 +72,16 @@ namespace CatTests
             var parser = stringParser.Value;
             var expectedToken = new Token(TokenTypes.String, expected);
 
-            var Consumer = A.Fake<Action<Token, int>>();
+            var result = parser.Parse(value);
 
-            parser.Parse(value, Consumer);
+            result.HasValue.Should().BeTrue();
 
-            A.CallTo(Consumer)
-                .WhenArgumentsMatch(f => f[0].Equals(expectedToken) && f[1].Equals(value.Length))
-                .MustHaveHappened(1, Times.Exactly);
+            var (token, length) = result!.Value;
+
+            token.Should().Be(expectedToken);
+            length.Should().Be(value.Length);
         }
+
         [Test]
         [TestCase("\"\"", "", TestName = "empty quoted string")]
         [TestCase("\"asf\"", "asf", TestName = "quoted string with letters")]
@@ -94,14 +94,16 @@ namespace CatTests
             var parser = stringParser.Value;
             var expectedToken = new Token(TokenTypes.String, expected);
 
-            var Consumer = A.Fake<Action<Token, int>>();
+            var result = parser.Parse(value);
 
-            parser.Parse(value, Consumer);
+            result.HasValue.Should().BeTrue();
 
-            A.CallTo(Consumer)
-                .WhenArgumentsMatch(f => f[0].Equals(expectedToken) && f[1].Equals(value.Length))
-                .MustHaveHappened(1, Times.Exactly);
+            var (token, length) = result!.Value;
+
+            token.Should().Be(expectedToken);
+            length.Should().Be(value.Length);
         }
+
         [Test]
         [TestCase("aaaaaa", TestName = "one word")]
         [TestCase("aaaaaa123", TestName = "one word with digits")]
@@ -111,14 +113,16 @@ namespace CatTests
             var parser = idParser.Value;
             var expectedToken = new Token(TokenTypes.Id, value);
 
-            var Consumer = A.Fake<Action<Token, int>>();
+            var result = parser.Parse(value);
 
-            parser.Parse(value, Consumer);
+            result.HasValue.Should().BeTrue();
 
-            A.CallTo(Consumer)
-                .WhenArgumentsMatch(f => f[0].Equals(expectedToken) && f[1].Equals(value.Length))
-                .MustHaveHappened(1, Times.Exactly);
+            var (token, length) = result!.Value;
+
+            token.Should().Be(expectedToken);
+            length.Should().Be(value.Length);
         }
+
         [Test]
         [TestCase(" aaaaaa", TestName = "start with space")]
         [TestCase("123aaaaaa", TestName = "one word starting with digits")]
@@ -129,13 +133,9 @@ namespace CatTests
             var parser = idParser.Value;
             var expectedToken = new Token(TokenTypes.Id, value);
 
-            var Consumer = A.Fake<Action<Token, int>>();
+            var result = parser.Parse(value);
 
-            parser.Parse(value, DebugConsumer);
-
-            A.CallTo(Consumer)
-                .WhenArgumentsMatch(f => f[0].Equals(expectedToken) && f[1].Equals(value.Length))
-                .MustHaveHappened(0, Times.Exactly);
+            (!result.HasValue || !result!.Value.token.Equals(expectedToken)).Should().BeTrue();
         }
     }
 }

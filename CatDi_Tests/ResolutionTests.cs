@@ -83,7 +83,7 @@ namespace CatDi_Tests
 
             Func<ManyDependencyClass> result = () => Kernel.Resolve<ManyDependencyClass>();
 
-            result.Should().Throw<KeyNotFoundException>();
+            result.Should().Throw<CatTypeNotRegisteredException>();
         }
 
         [Test]

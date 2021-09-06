@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CatLexing.parsers;
 using CatLexing.tokens;
@@ -7,13 +8,18 @@ namespace CatLexing
 {
     public interface ILexer
     {
-        public IEnumerable<Token> ParseCode(string code);
+        public IEnumerable<Token> ParseCode(string sourceFile, string[] code);
     }
 
     public class Lexer : ILexer
     {
+        private const string LexerSource = "Lexer";
+        private readonly ILogger _logger;
+
         private List<IParser> _parsers = TokenTypes.SingleTokenTypes.Value
             .Select(t => new SimpleTokenParser(t))
+            .Concat(TokenTypes.KeywordTokenTypes.Value
+                .Select<KeyWordTokenType, IParser>(t => new KeywordTokenParser(t)))
             .Concat(new List<IParser>
             {
                 new OperatorTokenParser(TokenTypes.OperatorTokenTypes.Value),
@@ -24,34 +30,51 @@ namespace CatLexing
             })
             .ToList();
 
-        public IEnumerable<Token> ParseCode(string code)
+        public Lexer(ILogger logger)
+        {
+            _logger = logger;
+        }
+
+        public IEnumerable<Token> ParseCode(string sourceFile, string[] codeFile)
         {
             var tokens = new List<Token>();
             var lastCodeLength = int.MaxValue;
 
-            void Consumer(Token token, int length)
+            for (var codeLineNo = 0; codeLineNo < codeFile.Length; codeLineNo++)
             {
-                tokens.Add(token);
-                code = code.Substring(length).Trim();
-            }
+                var code = codeFile[codeLineNo];
+                var codeCharacter = 0;
 
-            while (code.Length > 0)
-            {
-                while (code.Length < lastCodeLength && code.Length > 0)
+                while (code.Length > 0)
                 {
-                    lastCodeLength = code.Length;
-
-                    var parsers = _parsers.Where(parser => parser.CanStartWith(code[0])).ToList();
-                    foreach (var parser in parsers)
+                    while (code.Length < lastCodeLength && code.Length > 0)
                     {
-                        parser.Parse(in code, Consumer);
-                        if(code.Length < lastCodeLength)
-                            break;
+                        lastCodeLength = code.Length;
+
+                        var parsers = _parsers.Where(parser => parser.CanStartWith(code[0])).ToList();
+                        foreach (var parser in parsers)
+                        {
+                            var result = parser.Parse(in code);
+                            if (!result.HasValue) continue;
+
+                            var (token, length) = result!.Value;
+                            token.FillSource(sourceFile, codeLineNo, codeCharacter, codeCharacter + length);
+                            tokens.Add(token);
+                            codeCharacter += length;
+                            code = code.Substring(length).Trim();
+                            if (code.Length < lastCodeLength)
+                                break;
+                        }
+                    }
+
+                    if (code.Length > 0)
+                    {
+                        _logger.Log(LogLevel.Error, LexerSource,
+                            $"Unexpected character \"{code[0]}\" at {sourceFile}:{codeLineNo + 1}:{codeCharacter + 1}");
+                        code = code.Substring(1);
+                        codeCharacter++;
                     }
                 }
-
-                if (code.Length > 0)
-                    code = code.Substring(1);
             }
 
             return tokens;

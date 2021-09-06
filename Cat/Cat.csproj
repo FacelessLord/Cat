@@ -18,7 +18,12 @@
       <ProjectReference Include="..\CatAst\CatAst.csproj" />
       <ProjectReference Include="..\CatData\CatData.csproj" />
       <ProjectReference Include="..\CatDi\CatDi.csproj" />
+      <ProjectReference Include="..\CatInterpret\CatInterpret.csproj" />
       <ProjectReference Include="..\CatLexing\CatLexing.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="logger" />
     </ItemGroup>
 
 </Project>

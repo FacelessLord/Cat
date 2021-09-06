@@ -5,12 +5,13 @@ namespace CatLexing.parsers
 {
     public class BoolParser : IParser
     {
-        public void Parse(in string text, Action<Token, int> tokenConsumer)
+        public (Token token, int length)? Parse(in string text)
         {
             if(text.StartsWith("true"))
-                tokenConsumer(new Token(TokenTypes.Bool, "true"), 4);
+                return (new Token(TokenTypes.Bool, "true"), 4);
             if(text.StartsWith("false"))
-                tokenConsumer(new Token(TokenTypes.Bool, "false"), 5);
+                return (new Token(TokenTypes.Bool, "false"), 5);
+            return null;
         }
 
         public bool CanStartWith(char character)

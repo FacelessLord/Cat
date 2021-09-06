@@ -87,6 +87,11 @@ namespace CatLexing.tokens
             .Select(field => field.GetValue(null) as SimpleTokenType)
             .Where(value => value != null)
             .ToList());
+        
+        public static Lazy<List<KeyWordTokenType>> KeywordTokenTypes = new(() => typeof(TokenTypes).GetFields()
+            .Select(field => field.GetValue(null) as KeyWordTokenType)
+            .Where(value => value != null)
+            .ToList());
 
         public static Lazy<List<OperatorTokenType>> OperatorTokenTypes = new(() =>
             typeof(TokenTypes).GetFields()

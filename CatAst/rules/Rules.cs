@@ -134,9 +134,9 @@ namespace CatAst.rules
             CompositeRule.FixLeftRecursion(ArithmeticExpressionRecursive, ArithmeticTreeCollector);
 
         public static IRule Expression = Rule.Named(nameof(Expression))
-            .With(Chain.StartWith(SimpleExpression)
-                .CollectBy(IdentityCollector))
             .With(Chain.StartWith(ArithmeticExpression)
+                .CollectBy(IdentityCollector))
+            .With(Chain.StartWith(SimpleExpression)
                 .CollectBy(IdentityCollector));
 
         //todo create arithmetic expressions

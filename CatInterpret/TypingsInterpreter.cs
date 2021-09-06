@@ -91,5 +91,9 @@ namespace Cat.interpret
         {
             return _arithmeticInterpreter.Interpret(abon, this);
         }
+        public IDataType Interpret(ArithmeticUnaryOperationNode auon)
+        {
+            return _arithmeticInterpreter.Interpret(auon, this);
+        }
     }
 }

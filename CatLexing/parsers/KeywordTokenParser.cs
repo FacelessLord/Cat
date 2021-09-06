@@ -1,20 +1,20 @@
-﻿using System;
 using CatLexing.tokens;
 
 namespace CatLexing.parsers
 {
-    public class SimpleTokenParser : IParser
+    public class KeywordTokenParser : IParser
     {
-        public SimpleTokenType Type { get; }
+        public KeyWordTokenType Type { get; }
 
-        public SimpleTokenParser(SimpleTokenType type)
+        public KeywordTokenParser(KeyWordTokenType type)
         {
             Type = type;
         }
 
         public (Token token, int length)? Parse(in string text)
         {
-            if (text.StartsWith(Type.Terminal))
+            if (text.StartsWith(Type.Terminal) &&
+                (text.Length <= Type.Terminal.Length || !char.IsLetter(text[Type.Terminal.Length])))
             {
                 return (new Token(Type, Type.Terminal), Type.Terminal.Length);
             }

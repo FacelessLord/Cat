@@ -5,7 +5,7 @@ namespace CatLexing
 {
     public interface IParser
     {
-        public void Parse(in string text, Action<Token, int> tokenConsumer);
+        public (Token token, int length)? Parse(in string text);
 
         public bool CanStartWith(char character);
     }

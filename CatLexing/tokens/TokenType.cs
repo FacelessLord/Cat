@@ -22,7 +22,7 @@
 
         public string Name { get; }
     }
-    
+
     public class OperatorTokenType : ITokenType
     {
         public readonly string Terminal;
@@ -36,10 +36,15 @@
         public string Name { get; }
     }
 
-    public class KeyWordTokenType : SimpleTokenType
+    public class KeyWordTokenType : ITokenType
     {
-        public KeyWordTokenType(string terminal) : base(terminal, terminal)
+        public string Name { get; }
+        public readonly string Terminal;
+
+        public KeyWordTokenType(string terminal)
         {
+            Terminal = terminal;
+            Name = terminal;
         }
     }
 
@@ -52,7 +57,7 @@
     {
         public string Name { get; } = "number";
     }
-    
+
     public class BoolTokenType : ITokenType
     {
         public string Name { get; } = "bool";
