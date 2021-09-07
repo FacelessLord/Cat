@@ -12,8 +12,7 @@ namespace CatAst.rules
     {
         private static Dictionary<ITokenType, IRule> TokenRules = new();
 
-        private static Func<INode[], INode> IdentityCollector = nodes => nodes[0];
-
+        public static Func<INode[], INode> IdentityCollector = nodes => nodes[0];
         public static IRule Token(ITokenType type)
         {
             if (!TokenRules.ContainsKey(type))
@@ -139,7 +138,6 @@ namespace CatAst.rules
             .With(Chain.StartWith(SimpleExpression)
                 .CollectBy(IdentityCollector));
 
-        //todo create arithmetic expressions
-        // they all have to be in one rule with 
+        public static IRule Module = ModuleRules.Module;
     }
 }

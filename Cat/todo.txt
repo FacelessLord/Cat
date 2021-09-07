@@ -1,5 +1,4 @@
 ### ToDo
-* Tracking token positions to enable logging errors with positions in file
 * Pick best rule chain when nothing succeeds and drop excess token and missed rules in chain
 * Interpreting literals as DataObjects
 * Interpreting Arithmetic operations

@@ -14,7 +14,6 @@ namespace CatTests
         public Lazy<StringParser> stringParser = new(() => new StringParser());
         public Lazy<IdParser> idParser = new(() => new IdParser());
 
-        //todo
         public Lazy<SimpleTokenParser> simpleTokenParser(SimpleTokenType token) =>
             new(() => new SimpleTokenParser(token));
 

@@ -6,9 +6,9 @@ namespace Cat.data.exceptions
 {
     public class CatIllegalPropertyAccessException : Exception
     {
-        public CatIllegalPropertyAccessException(AccessRight accessRight, IDataType ownerType, string name) :
+        public CatIllegalPropertyAccessException(AccessRight accessRight, string name) :
             base($"Cannot {AccessRightHelper.AccessRightToString(accessRight)} " +
-                 $"property \"{name}\" of type {ownerType.FullName}")
+                 $"property \"{name}\" of unknown type")
         {
         }
     }

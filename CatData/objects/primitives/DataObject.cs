@@ -44,7 +44,7 @@ namespace Cat.data.objects.primitives
                 return callable.Call(args);
             }
 
-            throw new CatIllegalPropertyAccessException(AccessRight.Call, Type, property);
+            throw new CatIllegalPropertyAccessException(AccessRight.Call, property);
         }
     }
 }

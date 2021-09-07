@@ -14,11 +14,6 @@ namespace Cat.data.properties
             Name = name;
         }
 
-        /**
-         * Type where this property declared
-         */
-        public IDataType DeclaringType { get; private set; }
-
         public IDataType Type { get; }
         public string Name { get; }
         public AccessRight AccessRights { get; } = AccessRight.Read | AccessRight.Write | AccessRight.Call;
@@ -27,7 +22,7 @@ namespace Cat.data.properties
         {
             if ((AccessRights & AccessRight.Read) != 0)
                 return owner.GetProperty(Name);
-            throw new CatIllegalPropertyAccessException(AccessRight.Read, DeclaringType, Name);
+            throw new CatIllegalPropertyAccessException(AccessRight.Read, Name);
         }
 
         public bool HasValue(IDataObject owner)
@@ -39,14 +34,14 @@ namespace Cat.data.properties
         {
             if ((AccessRights & AccessRight.Write) != 0)
                 owner.SetProperty(Name, value);
-            throw new CatIllegalPropertyAccessException(AccessRight.Write, DeclaringType, Name);
+            throw new CatIllegalPropertyAccessException(AccessRight.Write, Name);
         }
 
         public void CallValue(IDataObject owner, params IDataObject[] args)
         {
             if ((AccessRights & AccessRight.Call) != 0)
                 owner.CallProperty(Name, args);
-            throw new CatIllegalPropertyAccessException(AccessRight.Call, DeclaringType, Name);
+            throw new CatIllegalPropertyAccessException(AccessRight.Call, Name);
         }
     }
 

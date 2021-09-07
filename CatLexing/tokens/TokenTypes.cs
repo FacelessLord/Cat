@@ -50,7 +50,6 @@ namespace CatLexing.tokens
         public static readonly ITokenType TwoQuestionMark = new OperatorTokenType(nameof(TwoQuestionMark), "??");
         public static readonly ITokenType Tilda = new OperatorTokenType(nameof(TwoQuestionMark), "~");
 
-        //todo move every SimpleTokenType to OperatorTokenType
         #endregion
 
         #region parentheses
@@ -69,6 +68,13 @@ namespace CatLexing.tokens
         public static readonly ITokenType Let = new KeyWordTokenType("let");
         public static readonly ITokenType As = new KeyWordTokenType("as");
         public static readonly ITokenType Is = new KeyWordTokenType("is");
+        public static readonly ITokenType Module = new KeyWordTokenType("module");
+        public static readonly ITokenType Function = new KeyWordTokenType("function");
+        public static readonly ITokenType Import = new KeyWordTokenType("import");
+        public static readonly ITokenType Export = new KeyWordTokenType("export");
+        public static readonly ITokenType Return = new KeyWordTokenType("return");
+        public static readonly ITokenType Class = new KeyWordTokenType("class");
+        public static readonly ITokenType Const = new KeyWordTokenType("const"); //may be removed
 
         #endregion
 
@@ -78,7 +84,7 @@ namespace CatLexing.tokens
         public static readonly ITokenType String = new StringTokenType();
         public static readonly ITokenType Id = new IdTokenType();
         public static readonly ITokenType Bool = new BoolTokenType();
-        
+
         #endregion
 
         public static readonly ITokenType Unknown = new UnknownTokenType();
@@ -87,7 +93,7 @@ namespace CatLexing.tokens
             .Select(field => field.GetValue(null) as SimpleTokenType)
             .Where(value => value != null)
             .ToList());
-        
+
         public static Lazy<List<KeyWordTokenType>> KeywordTokenTypes = new(() => typeof(TokenTypes).GetFields()
             .Select(field => field.GetValue(null) as KeyWordTokenType)
             .Where(value => value != null)
@@ -98,6 +104,5 @@ namespace CatLexing.tokens
                 .Select(field => field.GetValue(null) as OperatorTokenType)
                 .Where(value => value != null)
                 .ToList());
-
     }
 }

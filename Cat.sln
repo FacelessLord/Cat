@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatAst_Tests", "CatAst_Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatLogger", "CatLogger\CatLogger.csproj", "{22AB243E-D060-4317-B318-DB9E8EF5CEE9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatModules", "CatModules\CatModules.csproj", "{D0512FE4-2AF3-4528-B89D-20EAE2B954BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,9 @@ Global
 		{22AB243E-D060-4317-B318-DB9E8EF5CEE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22AB243E-D060-4317-B318-DB9E8EF5CEE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22AB243E-D060-4317-B318-DB9E8EF5CEE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0512FE4-2AF3-4528-B89D-20EAE2B954BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0512FE4-2AF3-4528-B89D-20EAE2B954BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0512FE4-2AF3-4528-B89D-20EAE2B954BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0512FE4-2AF3-4528-B89D-20EAE2B954BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
