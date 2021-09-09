@@ -4,6 +4,7 @@ using CatAst;
 using CatAst.api;
 using CatAst.nodes;
 using CatAst.nodes.arithmetics;
+using CatAst.nodes.modules;
 using CatAst.rules;
 using CatLexing.tokens;
 using FluentAssertions;
@@ -23,6 +24,12 @@ namespace CatAst_Tests
         private static Token equals = new Token(TokenTypes.Equals, "==");
         private static Token dot = new Token(Dot, ".");
         private static Token let = new Token(Let, "let");
+        private static Token import = new Token(Import, "import");
+        private static Token export = new Token(Export, "export");
+        private static Token module = new Token(Module, "module");
+        private static Token function = new Token(Function, "function");
+        private static Token @class = new Token(Class, "class");
+        private static Token @const = new Token(Const, "const");
         private static Token plus = new Token(Plus, "plus");
         private static Token minus = new Token(Minus, "minus");
         private static Token lParen = new Token(LParen, "(");
@@ -397,7 +404,8 @@ namespace CatAst_Tests
         {
             var tokens = new[]
             {
-                numberA, plus, lParen, plus, numberB, minus, minus, numberC, rParen, star, numberA, divide, numberB, @as, a, dot, b,
+                numberA, plus, lParen, plus, numberB, minus, minus, numberC, rParen, star, numberA, divide, numberB,
+                @as, a, dot, b,
                 @is, c, dot, d
             };
 
@@ -428,11 +436,11 @@ namespace CatAst_Tests
             var node7 = ((ArithmeticUnaryOperationNode) node5.A);
             node7.Operation.Should().Be(ArithmeticOperation.Plus);
             node7.A.Should().BeOfType<NumberNode>();
-            ((NumberNode)node7.A).NumberToken.Should().Be(numberB.Value);
+            ((NumberNode) node7.A).NumberToken.Should().Be(numberB.Value);
             var node6 = ((ArithmeticUnaryOperationNode) node5.B);
             node6.Operation.Should().Be(ArithmeticOperation.Minus);
             node6.A.Should().BeOfType<NumberNode>();
-            ((NumberNode)node6.A).NumberToken.Should().Be(numberC.Value);
+            ((NumberNode) node6.A).NumberToken.Should().Be(numberC.Value);
 
             var node4 = (ArithmeticBinaryOperationNode) node2.B;
             node4.Operation.Should().Be(ArithmeticOperation.Is);
@@ -482,6 +490,224 @@ namespace CatAst_Tests
             var flatNodes = ArithmeticTree.Flatten(node);
             flatNodes.Count.Should().Be(1);
             flatNodes[0].Should().Be(tokenNumberA);
+        }
+
+        [Test]
+        public void ModuleDeclarationRule_Works()
+        {
+            var tokens = new[]
+            {
+                module, a, dot, b
+            };
+
+            var node = ModuleRules.ModuleDeclaration.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<ModuleDeclarationNode>();
+            var moduleDecl = (ModuleDeclarationNode) node;
+            moduleDecl.ModuleName.Should().Be("a.b");
+        }
+
+        [Test]
+        public void ModuleImportRule_Works()
+        {
+            var tokens = new[]
+            {
+                import, a, dot, b
+            };
+
+            var node = ModuleRules.ModuleImport.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<ModuleImportNode>();
+            var importNode = (ModuleImportNode) node;
+            importNode.Target.IdToken.Should().Be("a.b");
+        }
+
+        [Test]
+        public void ModuleImportListRule_Works()
+        {
+            var tokens = new[]
+            {
+                import, a, dot, b,
+                import, b, dot, c,
+                import, c, dot, a
+            };
+
+            var node = ModuleRules.ModuleImports.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<ModuleImportListNode>();
+            var importListNode = (ModuleImportListNode) node;
+            importListNode.Imports.Length.Should().Be(3);
+            importListNode.Imports[0].Target.IdToken.Should().Be("a.b");
+            importListNode.Imports[1].Target.IdToken.Should().Be("b.c");
+            importListNode.Imports[2].Target.IdToken.Should().Be("c.a");
+        }
+
+        [Test]
+        public void ClassDefinitionRule_Works()
+        {
+            var tokens = new[]
+            {
+                @class, a, lBrace, rBrace
+            };
+
+            var node = ModuleRules.ClassDefinition.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<ClassDefinitionNode>();
+            var classDefinition = (ClassDefinitionNode) node;
+            classDefinition.Name.Should().Be("a");
+            classDefinition.Exported.Should().BeFalse();
+        }
+
+        [Test]
+        public void ExportClassDefinitionRule_Works()
+        {
+            var tokens = new[]
+            {
+                export, @class, a, lBrace, rBrace
+            };
+
+            var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<ClassDefinitionNode>();
+            var classDefinition = (ClassDefinitionNode) node;
+            classDefinition.Name.Should().Be("a");
+            classDefinition.Exported.Should().BeTrue();
+        }
+
+        [Test]
+        public void FunctionDefinitionRule_Works()
+        {
+            var tokens = new[]
+            {
+                function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
+            };
+
+            var node = ModuleRules.FunctionDefinition.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<FunctionDefinitionNode>();
+            var functionDefinition = (FunctionDefinitionNode) node;
+            functionDefinition.Name.Should().Be("a");
+            functionDefinition.ReturnType.Should().Be("b.c");
+            functionDefinition.Exported.Should().BeFalse();
+        }
+
+        [Test]
+        public void ExportFunctionDefinitionRule_Works()
+        {
+            var tokens = new[]
+            {
+                export, function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
+            };
+
+            var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<FunctionDefinitionNode>();
+            var functionDefinition = (FunctionDefinitionNode) node;
+            functionDefinition.Name.Should().Be("a");
+            functionDefinition.ReturnType.Should().Be("b.c");
+            functionDefinition.Exported.Should().BeTrue();
+        }
+
+        [Test]
+        public void ConstDefinitionRule_Works()
+        {
+            var tokens = new[]
+            {
+                @const, a, colon, b, dot, c
+            };
+
+            var node = ModuleRules.ConstDefinition.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<ConstDefinitionNode>();
+            var constDefinition = (ConstDefinitionNode) node;
+            constDefinition.Name.Should().Be("a");
+            constDefinition.Type.Should().Be("b.c");
+            constDefinition.Exported.Should().BeFalse();
+        }
+
+        [Test]
+        public void ExportConstDefinitionRule_Works()
+        {
+            var tokens = new[]
+            {
+                export, @const, a, colon, b, dot, c
+            };
+
+            var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<ConstDefinitionNode>();
+            var constDefinition = (ConstDefinitionNode) node;
+            constDefinition.Name.Should().Be("a");
+            constDefinition.Type.Should().Be("b.c");
+            constDefinition.Exported.Should().BeTrue();
+        }
+        
+        [Test]
+        public void ModuleInternalsRule_Works()
+        {
+            var tokens = new[]
+            {
+                export, @class, a, lBrace, rBrace, @const, a, colon, b, dot, c, function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
+            };
+
+            var node = ModuleRules.ModuleInternals.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<ModuleObjectListNode>();
+            var moduleObjects = (ModuleObjectListNode) node;
+            moduleObjects.Objects.Length.Should().Be(3);
+            moduleObjects.Objects[0].Should().BeOfType<ClassDefinitionNode>();
+            moduleObjects.Objects[1].Should().BeOfType<ConstDefinitionNode>();
+            moduleObjects.Objects[2].Should().BeOfType<FunctionDefinitionNode>();
+
+            var classDef = (ClassDefinitionNode) moduleObjects.Objects[0];
+            var constDef = (ConstDefinitionNode) moduleObjects.Objects[1];
+            var funcDef = (FunctionDefinitionNode) moduleObjects.Objects[2];
+
+            classDef.Exported.Should().BeTrue();
+            classDef.Name.Should().Be("a");
+            constDef.Exported.Should().BeFalse();
+            constDef.Name.Should().Be("a");
+            constDef.Type.Should().Be("b.c");
+            funcDef.Exported.Should().BeFalse();
+            funcDef.Name.Should().Be("a");
+            funcDef.ReturnType.Should().Be("b.c");
+        }
+        
+        [Test]
+        public void ModuleRule_Works()
+        {
+            var tokens = new[]
+            {
+                module, a, dot, b,
+                import, a, dot, b,
+                import, b, dot, c,
+                import, c, dot, a,
+                
+                export, @class, a, lBrace, rBrace,
+                @const, a, colon, b, dot, c,
+                function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
+            };
+
+            var node = ModuleRules.Module.Read(new BufferedEnumerable<Token>(tokens));
+
+            node.Should().BeOfType<ModuleNode>();
+            var moduleNode = (ModuleNode) node;
+            moduleNode.Name.Should().Be("a.b");
+            moduleNode.Imports.Should().Equal("a.b", "b.c", "c.a");
+            moduleNode.Objects.Length.Should().Be(3);
+
+            var classDef = (ClassDefinitionNode) moduleNode.Objects[0];
+            var constDef = (ConstDefinitionNode) moduleNode.Objects[1];
+            var funcDef = (FunctionDefinitionNode) moduleNode.Objects[2];
+
+            classDef.Exported.Should().BeTrue();
+            classDef.Name.Should().Be("a");
+            constDef.Exported.Should().BeFalse();
+            constDef.Name.Should().Be("a");
+            constDef.Type.Should().Be("b.c");
+            funcDef.Exported.Should().BeFalse();
+            funcDef.Name.Should().Be("a");
+            funcDef.ReturnType.Should().Be("b.c");
         }
     }
 }

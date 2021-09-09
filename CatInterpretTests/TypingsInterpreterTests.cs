@@ -29,6 +29,7 @@ namespace CatInterpretTests
         public void OneTimeSetUp()
         {
             Kernel = new Kernel();
+            Kernel.Register<Logger>().AsSingleton<ILogger>();
             Kernel.Register<TypeStorage>().AsSingleton<ITypeStorage>();
             Kernel.Register<TypingsStorage>().As<ITypingsStorage>();
             Kernel.Register<TypingsInterpreter>().As<IInterpreter<IDataType>>();

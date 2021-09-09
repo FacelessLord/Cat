@@ -1,4 +1,5 @@
 ### ToDo
+* Enable CatDi to store different factories for generic arguments 
 * Pick best rule chain when nothing succeeds and drop excess token and missed rules in chain
 * Interpreting literals as DataObjects
 * Interpreting Arithmetic operations

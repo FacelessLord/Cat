@@ -16,7 +16,6 @@ namespace CatAst.rules
         public static IRule ModuleDeclaration = Rule.Named(nameof(ModuleDeclaration))
             .With(Chain.StartWith(Token(TokenTypes.Module))
                 .Then(Rules.TypeName)
-                .Then(Token(Semicolon))
                 .CollectBy(nodes => new ModuleDeclarationNode(nodes[1] as IdNode)));
 
         public static IRule ModuleImport = Rule.Named(nameof(ModuleImport))
