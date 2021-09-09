@@ -1,7 +1,6 @@
 using System;
-using CatLexing.parsers;
-using CatLexing.tokens;
-using FakeItEasy;
+using CatImplementations.lexing.parsers;
+using CatImplementations.lexing.tokens;
 using FluentAssertions;
 using NUnit.Framework;
 

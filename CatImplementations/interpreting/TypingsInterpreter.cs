@@ -1,9 +1,12 @@
 ﻿using System;
 using CatApi.interpreting;
+using CatApi.structures;
 using CatApi.types;
 using CatImplementations.ast.nodes;
 using CatImplementations.ast.nodes.arithmetics;
 using CatImplementations.interpreting.exceptions;
+using CatImplementations.structures.properties;
+using CatImplementations.structures.variables;
 using CatImplementations.typings.primitives;
 
 namespace CatImplementations.interpreting
@@ -11,13 +14,14 @@ namespace CatImplementations.interpreting
     public class TypingsInterpreter : IInterpreter<IDataType>
     {
         private readonly ITypeStorage _typeStorage;
+        private readonly IScope _scope;
         private readonly ArithmeticExpressionTypingsInterpreter _arithmeticInterpreter;
 
-        public TypingsInterpreter(ITypeStorage typeStorage, ITypingsStorage typings,
+        public TypingsInterpreter(ITypeStorage typeStorage, IScope scope,
             ArithmeticExpressionTypingsInterpreter arithmeticInterpreter)
         {
             _typeStorage = typeStorage;
-            _typings = typings;
+            _scope = scope;
             _arithmeticInterpreter = arithmeticInterpreter;
         }
 
@@ -59,31 +63,31 @@ namespace CatImplementations.interpreting
 
             if (varTypeNode == null)
             {
-                if (_typings.HasVariable(variableName))
-                {
-                    throw new CatVariableRedeclarationException(variableName);
-                }
-
                 if (expressionType == null)
                 {
                     throw new CatVariableTypeUnknownException();
                 }
 
-                _typings.SetVariableType(variableName, expressionType);
+                var exprTypedvariable = new Variable(variableName, AccessRight.Rwc);
+                exprTypedvariable.AssignType(expressionType);
+                _scope.CreateVariable(exprTypedvariable);
                 return expressionType;
             }
 
             var varType = _typeStorage[((IdNode) node.Type).IdToken];
-            if (_typings.HasVariable(variableName))
+            if (_scope.VariableExistsInCurrentScope(variableName))
             {
-                throw new CatVariableRedeclarationException(variableName);
+                throw new CatVariableRedeclarationException(_scope, variableName);
             }
 
-            _typings.SetVariableType(variableName, varType);
+            var explicitlyTypedVariable = new Variable(variableName, AccessRight.Rwc);
 
             if (expressionType != null && !_typeStorage.IsTypeAssignableFrom(varType, expressionType))
                 throw new CatTypeMismatchException(expressionType, varType);
 
+            explicitlyTypedVariable.AssignType(varType);
+            _scope.CreateVariable(explicitlyTypedVariable);
+            
             return varType;
         }
 

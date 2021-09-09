@@ -1,21 +1,20 @@
 using System;
-using CatAst;
-using CatAst.api;
-using CatAst.rules;
-using CatData.objects.api;
-using CatData.properties;
-using CatData.types;
-using CatData.types.api;
-using CatData.types.primitives;
+using CatApi.interpreting;
+using CatApi.lexing;
+using CatApi.objects;
+using CatApi.types;
+using CatCollections;
 using CatDi.di;
-using CatInterpret;
-using CatInterpret.api;
-using CatInterpret.exceptions;
-using CatLexing;
-using CatLexing.tokens;
-using CatLogger;
+using CatImplementations.ast.rules;
+using CatImplementations.interpreting;
+using CatImplementations.interpreting.exceptions;
+using CatImplementations.lexing;
+using CatImplementations.structures.properties;
+using CatImplementations.typings;
+using CatImplementations.typings.primitives;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace CatInterpretTests
 {
@@ -33,12 +32,12 @@ namespace CatInterpretTests
             Kernel = new Kernel();
             Kernel.Register<Logger>().AsSingleton<ILogger>();
             Kernel.Register<TypeStorage>().AsSingleton<ITypeStorage>();
-            Kernel.Register<TypingsStorage>().As<ITypingsStorage>();
             Kernel.Register<TypingsInterpreter>().As<IInterpreter<IDataType>>();
             Kernel.Register<ArithmeticExpressionTypingsInterpreter>().As<ArithmeticExpressionTypingsInterpreter>();
             Kernel.Register<Lexer>().As<ILexer>();
             Kernel.Register<Func<IRule, string, INode>>(resolver => (rule, text) =>
-                    rule.Read(new BufferedEnumerable<Token>(resolver.Resolve<ILexer>().ParseCode("test.cat",text.Split("\n")))))
+                    rule.Read(new BufferedEnumerable<IToken>(resolver.Resolve<ILexer>()
+                        .ParseCode("test.cat", text.Split("\n")))))
                 .As<Func<IRule, string, INode>>();
         }
 

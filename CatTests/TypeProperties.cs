@@ -1,5 +1,6 @@
-﻿using CatData.types;
-using CatData.types.primitives;
+﻿using CatApi.types;
+using CatImplementations.typings;
+using CatImplementations.typings.primitives;
 using FluentAssertions;
 using NUnit.Framework;
 

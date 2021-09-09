@@ -16,7 +16,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CatAst\CatAst.csproj" />
+      <ProjectReference Include="..\CatCollections\CatCollections.csproj" />
       <ProjectReference Include="..\CatData\CatData.csproj" />
+      <ProjectReference Include="..\CatImplementations\CatImplementations.csproj" />
       <ProjectReference Include="..\CatLexing\CatLexing.csproj" />
     </ItemGroup>
 

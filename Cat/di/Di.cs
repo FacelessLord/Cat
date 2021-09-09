@@ -1,6 +1,8 @@
-﻿using CatData.types;
+﻿using CatApi.lexing;
+using CatApi.types;
 using CatDi.di;
-using CatLexing;
+using CatImplementations.lexing;
+using CatImplementations.typings;
 
 namespace Cat.di
 {

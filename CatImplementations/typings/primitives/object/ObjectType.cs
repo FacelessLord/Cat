@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CatApi.objects;
 using CatImplementations.objects.primitives;
 
 namespace CatImplementations.typings.primitives.@object

@@ -1,16 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using CatAst.rules;
-using CatData.types;
-using CatData.types.api;
+using CatApi.interpreting;
+using CatApi.lexing;
+using CatApi.logger;
+using CatApi.types;
 using CatDi.di;
-using CatInterpret;
-using CatInterpret.api;
-using CatLexing;
-using CatLogger;
+using CatImplementations.interpreting;
+using CatImplementations.lexing;
+using CatImplementations.logging;
+using CatImplementations.typings;
 
-#nullable enable
 namespace Cat
 {
     class Program
@@ -40,7 +40,6 @@ namespace Cat
 
             kernel.Register<Logger>().AsSingleton<ILogger>();
             kernel.Register<TypeStorage>().AsSingleton<ITypeStorage>();
-            kernel.Register<TypingsStorage>().As<ITypingsStorage>();
             kernel.Register<TypingsInterpreter>().As<IInterpreter<IDataType>>();
             kernel.Register<ArithmeticExpressionTypingsInterpreter>().As<ArithmeticExpressionTypingsInterpreter>();
             kernel.Register<Lexer>().As<ILexer>();

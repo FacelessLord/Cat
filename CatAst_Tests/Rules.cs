@@ -1,16 +1,16 @@
 using System;
 using System.Linq;
-using CatAst;
-using CatAst.api;
-using CatAst.nodes;
-using CatAst.nodes.arithmetics;
-using CatAst.nodes.modules;
-using CatAst.rules;
-using CatLexing.tokens;
+using CatApi.interpreting;
+using CatApi.lexing;
+using CatCollections;
+using CatImplementations.ast.nodes;
+using CatImplementations.ast.nodes.arithmetics;
+using CatImplementations.ast.nodes.modules;
+using CatImplementations.ast.rules;
+using CatImplementations.lexing.tokens;
 using FluentAssertions;
 using NUnit.Framework;
-using static CatLexing.tokens.TokenTypes;
-using IRule = CatAst.api.IRule;
+using static CatImplementations.lexing.tokens.TokenTypes;
 
 namespace CatAst_Tests
 {
@@ -70,7 +70,7 @@ namespace CatAst_Tests
         {
             var rule = Token(Let);
 
-            var node = rule.Read(new BufferedEnumerable<Token>(new[] { let }));
+            var node = rule.Read(new BufferedEnumerable<IToken>(new[] { let }));
 
             node.Should().BeOfType<TokenNode>();
             var tokenNode = (TokenNode) node;
@@ -98,7 +98,7 @@ namespace CatAst_Tests
                     .CollectBy(nodes => new NodeList(nodes)));
 
             var tokens = new[] { let, a, colon, b };
-            var node = rule.Read(new BufferedEnumerable<Token>(tokens));
+            var node = rule.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<NodeList>();
             var nodeList = (NodeList) node;
@@ -128,7 +128,7 @@ namespace CatAst_Tests
             var mainRule = CompositeRule.FixLeftRecursion(rrule, nodes => new NodeList(nodes));
 
             var tokens = new[] { a, dot, b, colon, c, dot, d };
-            var node = mainRule.Read(new BufferedEnumerable<Token>(tokens));
+            var node = mainRule.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<NodeList>();
             var nodeList = (NodeList) node;
@@ -169,7 +169,7 @@ namespace CatAst_Tests
             var mainRule = CompositeRule.FixLeftRecursion(rrule, nodes => new NodeList(nodes));
 
             var tokens = new[] { a, plus, b, colon, c, minus, d, colon, a, dot, b };
-            var node = mainRule.Read(new BufferedEnumerable<Token>(tokens));
+            var node = mainRule.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<NodeList>();
             var nodeList = (NodeList) node;
@@ -184,7 +184,7 @@ namespace CatAst_Tests
         {
             var tokens = new[] { a, dot, b, dot, c, dot, d };
 
-            var node = Rules.TypeName.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.TypeName.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<IdNode>();
 
@@ -197,7 +197,7 @@ namespace CatAst_Tests
         {
             var tokens = new[] { let, a, colon, b, dot, c, @set, numberA };
 
-            var node = Rules.LetVarStatement.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.LetVarStatement.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<VariableStatementNode>();
 
@@ -219,7 +219,7 @@ namespace CatAst_Tests
         {
             var tokens = new[] { let, a, colon, b, dot, c };
 
-            var node = Rules.LetVarStatement.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.LetVarStatement.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<VariableStatementNode>();
 
@@ -239,7 +239,7 @@ namespace CatAst_Tests
         {
             var tokens = new[] { let, a, @set, b };
 
-            var node = Rules.LetVarStatement.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.LetVarStatement.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<VariableStatementNode>();
 
@@ -259,7 +259,7 @@ namespace CatAst_Tests
         {
             var tokens = new[] { numberA };
 
-            var node = Rules.Literal.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.Literal.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<NumberNode>();
 
@@ -272,7 +272,7 @@ namespace CatAst_Tests
         {
             var tokens = new[] { stringA };
 
-            var node = Rules.Literal.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.Literal.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<StringNode>();
 
@@ -286,7 +286,7 @@ namespace CatAst_Tests
             //true
             {
                 var tokens = new[] { boolTrue };
-                var node = Rules.Literal.Read(new BufferedEnumerable<Token>(tokens));
+                var node = Rules.Literal.Read(new BufferedEnumerable<IToken>(tokens));
 
                 node.Should().BeOfType<BoolNode>();
 
@@ -297,7 +297,7 @@ namespace CatAst_Tests
             //false
             {
                 var tokens = new[] { boolFalse };
-                var node = Rules.Literal.Read(new BufferedEnumerable<Token>(tokens));
+                var node = Rules.Literal.Read(new BufferedEnumerable<IToken>(tokens));
 
                 node.Should().BeOfType<BoolNode>();
 
@@ -311,7 +311,7 @@ namespace CatAst_Tests
         {
             var tokens = new[] { lBracket, stringB, comma, numberC, comma, boolTrue, comma, a, rBracket };
 
-            var node = Rules.Literal.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.Literal.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ListNode>();
 
@@ -336,7 +336,7 @@ namespace CatAst_Tests
                 boolTrue, rBracket, comma, a, rBracket
             };
 
-            var node = Rules.Literal.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.Literal.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ListNode>();
 
@@ -358,7 +358,7 @@ namespace CatAst_Tests
                 rBrace
             };
 
-            var node = Rules.Literal.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.Literal.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ObjectLiteralNode>();
 
@@ -386,7 +386,7 @@ namespace CatAst_Tests
                 rBrace
             };
 
-            var node = Rules.Literal.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.Literal.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ObjectLiteralNode>();
 
@@ -409,7 +409,7 @@ namespace CatAst_Tests
                 @is, c, dot, d
             };
 
-            var node = Rules.ArithmeticExpression.Read(new BufferedEnumerable<Token>(tokens));
+            var node = Rules.ArithmeticExpression.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ArithmeticBinaryOperationNode>();
 
@@ -500,7 +500,7 @@ namespace CatAst_Tests
                 module, a, dot, b
             };
 
-            var node = ModuleRules.ModuleDeclaration.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.ModuleDeclaration.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ModuleDeclarationNode>();
             var moduleDecl = (ModuleDeclarationNode) node;
@@ -515,7 +515,7 @@ namespace CatAst_Tests
                 import, a, dot, b
             };
 
-            var node = ModuleRules.ModuleImport.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.ModuleImport.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ModuleImportNode>();
             var importNode = (ModuleImportNode) node;
@@ -532,7 +532,7 @@ namespace CatAst_Tests
                 import, c, dot, a
             };
 
-            var node = ModuleRules.ModuleImports.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.ModuleImports.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ModuleImportListNode>();
             var importListNode = (ModuleImportListNode) node;
@@ -550,7 +550,7 @@ namespace CatAst_Tests
                 @class, a, lBrace, rBrace
             };
 
-            var node = ModuleRules.ClassDefinition.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.ClassDefinition.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ClassDefinitionNode>();
             var classDefinition = (ClassDefinitionNode) node;
@@ -566,7 +566,7 @@ namespace CatAst_Tests
                 export, @class, a, lBrace, rBrace
             };
 
-            var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ClassDefinitionNode>();
             var classDefinition = (ClassDefinitionNode) node;
@@ -582,7 +582,7 @@ namespace CatAst_Tests
                 function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
             };
 
-            var node = ModuleRules.FunctionDefinition.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.FunctionDefinition.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<FunctionDefinitionNode>();
             var functionDefinition = (FunctionDefinitionNode) node;
@@ -599,7 +599,7 @@ namespace CatAst_Tests
                 export, function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
             };
 
-            var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<FunctionDefinitionNode>();
             var functionDefinition = (FunctionDefinitionNode) node;
@@ -616,7 +616,7 @@ namespace CatAst_Tests
                 @const, a, colon, b, dot, c
             };
 
-            var node = ModuleRules.ConstDefinition.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.ConstDefinition.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ConstDefinitionNode>();
             var constDefinition = (ConstDefinitionNode) node;
@@ -633,7 +633,7 @@ namespace CatAst_Tests
                 export, @const, a, colon, b, dot, c
             };
 
-            var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ConstDefinitionNode>();
             var constDefinition = (ConstDefinitionNode) node;
@@ -650,7 +650,7 @@ namespace CatAst_Tests
                 export, @class, a, lBrace, rBrace, @const, a, colon, b, dot, c, function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
             };
 
-            var node = ModuleRules.ModuleInternals.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.ModuleInternals.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ModuleObjectListNode>();
             var moduleObjects = (ModuleObjectListNode) node;
@@ -688,7 +688,7 @@ namespace CatAst_Tests
                 function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
             };
 
-            var node = ModuleRules.Module.Read(new BufferedEnumerable<Token>(tokens));
+            var node = ModuleRules.Module.Read(new BufferedEnumerable<IToken>(tokens));
 
             node.Should().BeOfType<ModuleNode>();
             var moduleNode = (ModuleNode) node;

@@ -1,4 +1,5 @@
-﻿using CatImplementations.objects.primitives;
+﻿using CatApi.objects;
+using CatImplementations.objects.primitives;
 using CatImplementations.typings.primitives.@object;
 
 namespace CatImplementations.typings.primitives.@bool

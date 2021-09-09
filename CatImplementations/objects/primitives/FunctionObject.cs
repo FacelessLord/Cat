@@ -1,4 +1,5 @@
 using CatApi.interpreting;
+using CatApi.objects;
 using CatApi.types;
 
 namespace CatImplementations.objects.primitives
@@ -7,7 +8,7 @@ namespace CatImplementations.objects.primitives
     {
         private readonly IInterpreter<IDataObject> _interpeter;
 
-        public FunctionObject(IInterpreter<IDataObject> interpeter, ,IDataType type) : base(type)
+        public FunctionObject(IInterpreter<IDataObject> interpeter,IDataType type) : base(type)
         {
             _interpeter = interpeter;
         }

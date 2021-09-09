@@ -1,4 +1,5 @@
-﻿using CatImplementations.objects.primitives;
+﻿using CatApi.objects;
+using CatImplementations.objects.primitives;
 using CatImplementations.objects.wrappers;
 using CatImplementations.typings.primitives.@object;
 

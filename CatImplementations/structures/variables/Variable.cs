@@ -1,5 +1,6 @@
 using CatApi.objects;
 using CatApi.structures;
+using CatApi.types;
 using CatImplementations.exceptions;
 using CatImplementations.structures.properties;
 
@@ -7,7 +8,7 @@ namespace CatImplementations.structures.variables
 {
     public class Variable : IVariable
     {
-        public int AccessRights { get; private set; }
+        public int AccessRights { get; }
         public IDataObject Value { get; private set; }
         public string Name { get; }
 
@@ -39,7 +40,19 @@ namespace CatImplementations.structures.variables
 
         public IDataObject Call(IScope scope, IDataObject[] arguments)
         {
-            throw new System.NotImplementedException();
+            if ((AccessRights & (int) AccessRight.Call) > 0)
+            {
+                return Value;
+            }
+
+            throw new CatIllegalPropertyAccessException(AccessRight.Call, Name);
+        }
+
+        public IDataType Type { get; private set; }
+
+        public void AssignType(IDataType type)
+        {
+            Type = type;
         }
     }
 }

@@ -1,8 +1,9 @@
 using CatApi.objects;
+using CatApi.types;
 
 namespace CatApi.structures
 {
-    public interface IVariable
+    public interface IVariable : ITypable
     {
         public int AccessRights { get; }
         public IDataObject Value { get; }
