@@ -1,6 +1,6 @@
-﻿using Cat.data.objects.primitives;
-using Cat.data.types;
-using Cat.data.types.primitives;
+﻿using CatData.objects.primitives;
+using CatData.types;
+using CatData.types.primitives;
 using FluentAssertions;
 using NUnit.Framework;
 

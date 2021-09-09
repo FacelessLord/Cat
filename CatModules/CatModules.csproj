@@ -10,4 +10,8 @@
       <ProjectReference Include="..\CatLexing\CatLexing.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="api" />
+    </ItemGroup>
+
 </Project>

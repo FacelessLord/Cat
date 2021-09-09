@@ -1,4 +1,4 @@
-﻿using Cat.data.types;
+﻿using CatData.types;
 using CatDi.di;
 using CatLexing;
 
