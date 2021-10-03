@@ -35,7 +35,8 @@ namespace CatImplementations.structures
         {
             if (!VariableExistsInCurrentScope(variable.Name))
                 Variables[variable.Name] = variable;
-            throw new CatVariableRedeclarationException(this, variable.Name);
+            else
+                throw new CatVariableRedeclarationException(this, variable.Name);
         }
 
         public bool VariableExists(string name)

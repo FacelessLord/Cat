@@ -4,20 +4,23 @@ namespace CatImplementations.ast.nodes.modules
 {
     public class FunctionDefinitionNode : IModuleObjectNode
     {
+        public FunctionBodyNode Body { get; }
+        public AccessModifier AccessModifier { get; private set; } = AccessModifier.Private;
         public string Name { get; }
         public string ReturnType { get; }
+        public (string argName, string typeName)[] Args { get; }
 
-        public FunctionDefinitionNode(IdNode name, IdNode returnType)
+        public FunctionDefinitionNode(FunctionSignatureNode signature, FunctionBodyNode body)
         {
-            Name = name.IdToken;
-            ReturnType = returnType.IdToken;
+            Body = body;
+            Name = signature.Name;
+            ReturnType = signature.ReturnType;
+            Args = signature.Args;
         }
 
-        public bool Exported { get; set; }
-
-        public void SetExported(bool value)
+        public void SetAccessModifier(AccessModifier value)
         {
-            Exported = value;
+            AccessModifier = value;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace CatImplementations.exceptions
 {
     public class CatPropertyUndefinedException : Exception
     {
-        public CatPropertyUndefinedException(IDataProperty property, IDataType owner) : base($"Property {property.Name} is not defined on type {owner.Name}")
+        public CatPropertyUndefinedException(string property, IDataType owner) : base($"Property \"{property}\" is not defined on type {owner.Name}")
         {
             
         }

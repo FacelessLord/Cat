@@ -3,6 +3,7 @@ using System.Linq;
 using CatApi.interpreting;
 using CatApi.lexing;
 using CatCollections;
+using CatImplementations.ast;
 using CatImplementations.ast.nodes;
 using CatImplementations.ast.nodes.arithmetics;
 using CatImplementations.ast.nodes.modules;
@@ -25,9 +26,10 @@ namespace CatAst_Tests
         private static Token dot = new Token(Dot, ".");
         private static Token let = new Token(Let, "let");
         private static Token import = new Token(Import, "import");
-        private static Token export = new Token(Export, "export");
         private static Token module = new Token(Module, "module");
         private static Token function = new Token(Function, "function");
+        private static Token @public = new Token(Public, "public");
+        private static Token @private = new Token(Private, "private");
         private static Token @class = new Token(Class, "class");
         private static Token @const = new Token(Const, "const");
         private static Token plus = new Token(Plus, "plus");
@@ -77,15 +79,6 @@ namespace CatAst_Tests
             tokenNode.Token.Should().Be(let);
         }
 
-        private class NodeList : INode
-        {
-            public INode[] Nodes { get; }
-
-            public NodeList(INode[] nodes)
-            {
-                Nodes = nodes;
-            }
-        }
 
         [Test]
         public void LetVarTokenRule()
@@ -434,31 +427,21 @@ namespace CatAst_Tests
             node5.A.Should().BeOfType<ArithmeticUnaryOperationNode>();
             node5.B.Should().BeOfType<ArithmeticUnaryOperationNode>();
             var node7 = ((ArithmeticUnaryOperationNode) node5.A);
-            node7.Operation.Should().Be(ArithmeticOperation.Plus);
+            node7.Operation.Should().Be(ArithmeticOperation.UPlus);
             node7.A.Should().BeOfType<NumberNode>();
             ((NumberNode) node7.A).NumberToken.Should().Be(numberB.Value);
             var node6 = ((ArithmeticUnaryOperationNode) node5.B);
-            node6.Operation.Should().Be(ArithmeticOperation.Minus);
+            node6.Operation.Should().Be(ArithmeticOperation.UMinus);
             node6.A.Should().BeOfType<NumberNode>();
             ((NumberNode) node6.A).NumberToken.Should().Be(numberC.Value);
 
             var node4 = (ArithmeticBinaryOperationNode) node2.B;
-            node4.Operation.Should().Be(ArithmeticOperation.Is);
-            node4.A.Should().BeOfType<ArithmeticBinaryOperationNode>();
+            node4.Operation.Should().Be(ArithmeticOperation.As);
+            node4.A.Should().BeOfType<NumberNode>();
             node4.B.Should().BeOfType<IdNode>();
 
-            var node8 = (ArithmeticBinaryOperationNode) node4.A;
-            node8.Operation.Should().Be(ArithmeticOperation.As);
-            node8.A.Should().BeOfType<NumberNode>();
-            node8.B.Should().BeOfType<IdNode>();
-
-            var node9 = (NumberNode) node8.A;
-            node9.NumberToken.Should().Be(numberB.Value);
-            var node10 = (IdNode) node8.B;
-            node10.IdToken.Should().Be("a.b");
-
             var node11 = (IdNode) node4.B;
-            node11.IdToken.Should().Be("c.d");
+            node11.IdToken.Should().Be("a.b");
         }
 
         [Test]
@@ -470,8 +453,8 @@ namespace CatAst_Tests
             var node = new INode[]
             {
                 tokenNumberA,
-                new CompositeRule.NodeList(new INode[]
-                    { tokenPlus, new CompositeRule.NodeList(new INode[] { tokenNumberB }) })
+                new NodeList(new INode[]
+                    { tokenPlus, new NodeList(new INode[] { tokenNumberB }) })
             };
 
             var flatNodes = ArithmeticTree.Flatten(node);
@@ -555,7 +538,7 @@ namespace CatAst_Tests
             node.Should().BeOfType<ClassDefinitionNode>();
             var classDefinition = (ClassDefinitionNode) node;
             classDefinition.Name.Should().Be("a");
-            classDefinition.Exported.Should().BeFalse();
+            classDefinition.AccessModifier.Should().Be(AccessModifier.Private);
         }
 
         [Test]
@@ -563,7 +546,7 @@ namespace CatAst_Tests
         {
             var tokens = new[]
             {
-                export, @class, a, lBrace, rBrace
+                @public, @class, a, lBrace, rBrace
             };
 
             var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<IToken>(tokens));
@@ -571,7 +554,7 @@ namespace CatAst_Tests
             node.Should().BeOfType<ClassDefinitionNode>();
             var classDefinition = (ClassDefinitionNode) node;
             classDefinition.Name.Should().Be("a");
-            classDefinition.Exported.Should().BeTrue();
+            classDefinition.AccessModifier.Should().Be(AccessModifier.Public);
         }
 
         [Test]
@@ -588,7 +571,7 @@ namespace CatAst_Tests
             var functionDefinition = (FunctionDefinitionNode) node;
             functionDefinition.Name.Should().Be("a");
             functionDefinition.ReturnType.Should().Be("b.c");
-            functionDefinition.Exported.Should().BeFalse();
+            functionDefinition.AccessModifier.Should().Be(AccessModifier.Private);
         }
 
         [Test]
@@ -596,7 +579,7 @@ namespace CatAst_Tests
         {
             var tokens = new[]
             {
-                export, function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
+                @public, function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
             };
 
             var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<IToken>(tokens));
@@ -605,7 +588,7 @@ namespace CatAst_Tests
             var functionDefinition = (FunctionDefinitionNode) node;
             functionDefinition.Name.Should().Be("a");
             functionDefinition.ReturnType.Should().Be("b.c");
-            functionDefinition.Exported.Should().BeTrue();
+            functionDefinition.AccessModifier.Should().Be(AccessModifier.Public);
         }
 
         [Test]
@@ -622,7 +605,7 @@ namespace CatAst_Tests
             var constDefinition = (ConstDefinitionNode) node;
             constDefinition.Name.Should().Be("a");
             constDefinition.Type.Should().Be("b.c");
-            constDefinition.Exported.Should().BeFalse();
+            constDefinition.AccessModifier.Should().Be(AccessModifier.Private);
         }
 
         [Test]
@@ -630,7 +613,7 @@ namespace CatAst_Tests
         {
             var tokens = new[]
             {
-                export, @const, a, colon, b, dot, c
+                @public, @const, a, colon, b, dot, c
             };
 
             var node = ModuleRules.PrefixedModuleObject.Read(new BufferedEnumerable<IToken>(tokens));
@@ -639,15 +622,16 @@ namespace CatAst_Tests
             var constDefinition = (ConstDefinitionNode) node;
             constDefinition.Name.Should().Be("a");
             constDefinition.Type.Should().Be("b.c");
-            constDefinition.Exported.Should().BeTrue();
+            constDefinition.AccessModifier.Should().Be(AccessModifier.Public);
         }
-        
+
         [Test]
         public void ModuleInternalsRule_Works()
         {
             var tokens = new[]
             {
-                export, @class, a, lBrace, rBrace, @const, a, colon, b, dot, c, function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
+                @public, @class, a, lBrace, rBrace, @const, a, colon, b, dot, c, function, a, lParen, rParen, colon, b,
+                dot, c, lBrace, rBrace
             };
 
             var node = ModuleRules.ModuleInternals.Read(new BufferedEnumerable<IToken>(tokens));
@@ -663,16 +647,16 @@ namespace CatAst_Tests
             var constDef = (ConstDefinitionNode) moduleObjects.Objects[1];
             var funcDef = (FunctionDefinitionNode) moduleObjects.Objects[2];
 
-            classDef.Exported.Should().BeTrue();
+            classDef.AccessModifier.Should().Be(AccessModifier.Public);
             classDef.Name.Should().Be("a");
-            constDef.Exported.Should().BeFalse();
+            constDef.AccessModifier.Should().Be(AccessModifier.Private);
             constDef.Name.Should().Be("a");
             constDef.Type.Should().Be("b.c");
-            funcDef.Exported.Should().BeFalse();
+            funcDef.AccessModifier.Should().Be(AccessModifier.Private);
             funcDef.Name.Should().Be("a");
             funcDef.ReturnType.Should().Be("b.c");
         }
-        
+
         [Test]
         public void ModuleRule_Works()
         {
@@ -682,9 +666,9 @@ namespace CatAst_Tests
                 import, a, dot, b,
                 import, b, dot, c,
                 import, c, dot, a,
-                
-                export, @class, a, lBrace, rBrace,
-                @const, a, colon, b, dot, c,
+
+                @public, @class, a, lBrace, rBrace,
+                @const, a, colon, b, dot, c, set, a,
                 function, a, lParen, rParen, colon, b, dot, c, lBrace, rBrace
             };
 
@@ -700,12 +684,12 @@ namespace CatAst_Tests
             var constDef = (ConstDefinitionNode) moduleNode.Objects[1];
             var funcDef = (FunctionDefinitionNode) moduleNode.Objects[2];
 
-            classDef.Exported.Should().BeTrue();
+            classDef.AccessModifier.Should().Be(AccessModifier.Public);
             classDef.Name.Should().Be("a");
-            constDef.Exported.Should().BeFalse();
+            constDef.AccessModifier.Should().Be(AccessModifier.Private);
             constDef.Name.Should().Be("a");
             constDef.Type.Should().Be("b.c");
-            funcDef.Exported.Should().BeFalse();
+            funcDef.AccessModifier.Should().Be(AccessModifier.Private);
             funcDef.Name.Should().Be("a");
             funcDef.ReturnType.Should().Be("b.c");
         }

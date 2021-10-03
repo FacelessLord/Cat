@@ -76,14 +76,18 @@ namespace CatImplementations.typings
 
         public TypeStorage()
         {
+            SetupPrimitiveTypes();
+            SetupBaseMethods();
+        }
+
+        private void SetupPrimitiveTypes()
+        {
             // Types[Primitives.Any] = new AnyType(this);
             Types[Primitives.Never] = new NeverType();
             Types[Primitives.Object] = new ObjectType();
             Types[Primitives.String] = new StringType();
             Types[Primitives.Number] = new NumberType();
             Types[Primitives.Bool] = new BoolType();
-
-            SetupBaseMethods();
         }
 
         private void SetupBaseMethods()
@@ -124,6 +128,7 @@ namespace CatImplementations.typings
         public void ClearTypes()
         {
             Types.Clear();
+            SetupPrimitiveTypes();
         }
 
         public IDataType Intersection(IDataType a, IDataType b)

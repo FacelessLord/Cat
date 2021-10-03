@@ -10,7 +10,7 @@ namespace CatImplementations.ast.nodes.arithmetics
         public ArithmeticUnaryOperationNode(INode a, TokenNode operation)
         {
             A = a;
-            Operation = OperationHelper.GetOperationFromTokenType(operation.Token.Type);
+            Operation = OperationHelper.GetOperationFromTokenType(operation.Token.Type, 1);
         }
     }
 }

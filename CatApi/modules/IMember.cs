@@ -1,12 +1,12 @@
 using CatApi.objects;
 using CatApi.types;
+using CatImplementations.ast;
 
 namespace CatApi.modules
 {
-    public interface IModuleMember
+    public interface IMember
     {
         public string Name { get; }
-        public IDataType ObjectType { get; }
-        public IDataObject GetValue();
+        public AccessModifier AccessModifier { get; }
     }
 }

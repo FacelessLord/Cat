@@ -11,7 +11,7 @@ namespace CatImplementations.ast.nodes.arithmetics
         public ArithmeticBinaryOperationNode(INode a, TokenNode operation, INode b)
         {
             A = a;
-            Operation = OperationHelper.GetOperationFromTokenType(operation.Token.Type);
+            Operation = OperationHelper.GetOperationFromTokenType(operation.Token.Type, 2);
             B = b;
         }
     }

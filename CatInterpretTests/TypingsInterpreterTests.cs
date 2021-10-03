@@ -1,7 +1,9 @@
 using System;
 using CatApi.interpreting;
 using CatApi.lexing;
+using CatApi.logger;
 using CatApi.objects;
+using CatApi.structures;
 using CatApi.types;
 using CatCollections;
 using CatDi.di;
@@ -9,12 +11,13 @@ using CatImplementations.ast.rules;
 using CatImplementations.interpreting;
 using CatImplementations.interpreting.exceptions;
 using CatImplementations.lexing;
+using CatImplementations.logging;
+using CatImplementations.structures;
 using CatImplementations.structures.properties;
 using CatImplementations.typings;
 using CatImplementations.typings.primitives;
 using FluentAssertions;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace CatInterpretTests
 {
@@ -32,6 +35,7 @@ namespace CatInterpretTests
             Kernel = new Kernel();
             Kernel.Register<Logger>().AsSingleton<ILogger>();
             Kernel.Register<TypeStorage>().AsSingleton<ITypeStorage>();
+            Kernel.Register(r => new Scope("testScope")).As<IScope>();
             Kernel.Register<TypingsInterpreter>().As<IInterpreter<IDataType>>();
             Kernel.Register<ArithmeticExpressionTypingsInterpreter>().As<ArithmeticExpressionTypingsInterpreter>();
             Kernel.Register<Lexer>().As<ILexer>();
@@ -49,6 +53,12 @@ namespace CatInterpretTests
             Parse = Kernel.Resolve<Func<IRule, string, INode>>();
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            TypeStorage.ClearTypes();
+        }
+        
         [Test]
         public void Interprets_NumberNode_As_NumberType()
         {

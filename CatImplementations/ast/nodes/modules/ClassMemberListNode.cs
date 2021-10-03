@@ -4,18 +4,18 @@ using CatApi.modules;
 
 namespace CatImplementations.ast.nodes.modules
 {
-    public class ModuleObjectListNode : INode
+    public class ClassMemberListNode : INode
     {
-        public IModuleObjectNode[] Objects { get; }
+        public IModuleObjectNode[] Members { get; }
 
-        public ModuleObjectListNode(INode[] nodes)
+        public ClassMemberListNode(INode[] nodes)
         {
-            Objects = nodes.Length switch
+            Members = nodes.Length switch
             {
                 0 => new IModuleObjectNode[0],
                 1 => new[] { nodes[0] as IModuleObjectNode },
-                _ => (nodes[1] is ModuleObjectListNode mil
-                        ? new[] { nodes[0] }.Concat(mil.Objects).ToArray()
+                _ => (nodes[1] is ClassMemberListNode mil
+                        ? new[] { nodes[0] }.Concat(mil.Members).ToArray()
                         : new[] { nodes[0], nodes[1] }).Cast<IModuleObjectNode>()
                     .ToArray()
             };

@@ -70,20 +70,7 @@ namespace CatImplementations.ast.rules
             return this;
         }
 
-        public class NodeList : INode
-        {
-            public INode[] Nodes { get; }
-
-            public NodeList(INode[] nodes)
-            {
-                Nodes = nodes;
-            }
-
-            public NodeList(INode[] nodes, NodeList list)
-            {
-                Nodes = nodes.Concat(list.Nodes).ToArray();
-            }
-        }
+        
 
         /**
          * Creates new right-recursive rule

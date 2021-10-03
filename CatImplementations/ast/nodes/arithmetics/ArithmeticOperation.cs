@@ -15,8 +15,10 @@ namespace CatImplementations.ast.nodes.arithmetics
         At,
         Hash,
         Power,
-        Not,
         Is,
         As,
+        UPlus,
+        UMinus,
+        Not,
     }
 }

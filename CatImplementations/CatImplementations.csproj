@@ -9,7 +9,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ast" />
       <Folder Include="objects" />
     </ItemGroup>
 

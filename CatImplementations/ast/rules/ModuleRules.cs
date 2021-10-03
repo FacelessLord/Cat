@@ -31,34 +31,116 @@ namespace CatImplementations.ast.rules
             .With(Chain.StartWith(ModuleImport)
                 .CollectBy(IdentityCollector));
 
+        public static IRule FunctionArgs = Rule.Named(nameof(FunctionArgs))
+            .With(_ => Chain.StartWith(Rules.ID)
+                .Then(Token(Colon))
+                .Then(Rules.TypeName)
+                .Then(_)
+                .CollectBy(nodes => new FunctionArgumentListNode(nodes)))
+            .With(Chain.StartWith(Rules.ID)
+                .Then(Token(Colon))
+                .Then(Rules.TypeName)
+                .CollectBy(nodes => new FunctionArgumentNode(nodes[0] as IdNode, nodes[2] as IdNode)));
+
+        public static IRule Statement = Rule.Named(nameof(Statement))
+            .With(Chain.StartWith(Rules.Expression)
+                .CollectBy(IdentityCollector));
+
+        public static IRule FunctionBody = Rule.Named(nameof(FunctionBody))
+            .With(_ => Chain.StartWith(Statement)
+                .Then(FunctionBody)
+                .CollectBy(nodes => new FunctionBodyNode(nodes)));
+
+        public static IRule ParenatedArgumentList = Rule.Named(nameof(ParenatedArgumentList))
+            .With(Chain.StartWith(Token(LParen))
+                .Then(FunctionArgs)
+                .Then(Token(RParen))
+                .CollectBy(nodes => nodes[1] as FunctionArgumentListNode))
+            .With(Chain.StartWith(Token(LParen))
+                .Then(Token(RParen))
+                .CollectBy(nodes => new FunctionArgumentListNode(new INode[0])));
+
+        public static IRule BracedFunctionBody = Rule.Named(nameof(BracedFunctionBody))
+            .With(Chain.StartWith(Token(LBrace))
+                .Then(FunctionBody)
+                .Then(Token(RBrace))
+                .CollectBy(nodes => nodes[1] as FunctionBodyNode))
+            .With(Chain.StartWith(Token(LBrace))
+                .Then(Token(RBrace))
+                .CollectBy(nodes => new FunctionBodyNode(new INode[0])));
+
+        public static IRule ClassConstructor = Rule.Named(nameof(ClassConstructor))
+            .With(Chain.StartWith(Token(Constructor))
+                .Then(ParenatedArgumentList)
+                .Then(BracedFunctionBody)
+                .CollectBy(nodes =>
+                    new ConstructorNode(nodes[1] as FunctionArgumentListNode, nodes[5] as FunctionBodyNode)));
+
+        public static IRule AccessModifier = Rule.Named(nameof(AccessModifier))
+            .With(Chain.StartWith(Token(Public))
+                .CollectBy(IdentityCollector))
+            .With(Chain.StartWith(Token(Private))
+                .CollectBy(IdentityCollector));
+
+        public static IRule ClassMember = Rule.Named(nameof(ClassMember))
+            .With(_ => Chain.StartWith(FunctionDefinition)
+                .CollectBy(IdentityCollector))
+            .With(_ => Chain.StartWith(ConstDefinition)
+                .CollectBy(IdentityCollector))
+            .With(_ => Chain.StartWith(ClassDefinition)
+                .CollectBy(IdentityCollector))
+            .With(_ => Chain.StartWith(ClassConstructor)
+                .CollectBy(IdentityCollector));
+
+        public static IRule ClassMembers = Rule.Named(nameof(ClassMembers))
+            .With(_ => Chain.StartWith(ClassMember)
+                .Then(_)
+                .CollectBy(nodes => new ClassMemberListNode(nodes)))
+            .With(Chain.StartWith(ClassMember)
+                .CollectBy(nodes => new ClassMemberListNode(nodes)));
+
         public static IRule ClassDefinition = Rule.Named(nameof(ClassDefinition))
             .With(Chain.StartWith(Token(Class))
                 .Then(Rules.ID)
                 .Then(Token(LBrace))
-                //todo class internals
+                .Then(ClassMembers)
                 .Then(Token(RBrace))
-                .CollectBy(nodes => new ClassDefinitionNode(nodes[1] as IdNode)));
+                .CollectBy(nodes => new ClassDefinitionNode(nodes[1] as IdNode, nodes[3] as ClassMemberListNode)))
+            .With(Chain.StartWith(Token(Class))
+                .Then(Rules.ID)
+                .Then(Token(LBrace))
+                .Then(Token(RBrace))
+                .CollectBy(nodes =>
+                    new ClassDefinitionNode(nodes[1] as IdNode, new ClassMemberListNode(new INode[0]))));
 
-        public static IRule FunctionDefinition = Rule.Named(nameof(FunctionDefinition))
+
+        public static IRule FunctionSignature = Rule.Named(nameof(FunctionSignature))
             .With(Chain.StartWith(Token(Function))
                 .Then(Rules.ID)
-                .Then(Token(LParen))
-                //todo func args
-                .Then(Token(RParen))
+                .Then(ParenatedArgumentList)
                 .Then(Token(Colon))
                 .Then(Rules.TypeName)
-                .Then(Token(LBrace))
-                //todo func internals
-                .Then(Token(RBrace))
-                .CollectBy(nodes => new FunctionDefinitionNode(nodes[1] as IdNode, nodes[5] as IdNode)));
+                .CollectBy(nodes => new FunctionSignatureNode(nodes[1] as IdNode, nodes[2], nodes[4] as IdNode)));
+
+        public static IRule FunctionDefinition = Rule.Named(nameof(FunctionDefinition))
+            .With(Chain.StartWith(FunctionSignature)
+                .Then(BracedFunctionBody)
+                .CollectBy(nodes =>
+                    new FunctionDefinitionNode(nodes[0] as FunctionSignatureNode, nodes[1] as FunctionBodyNode)));
 
         public static IRule ConstDefinition = Rule.Named(nameof(ConstDefinition))
             .With(Chain.StartWith(Token(Const))
                 .Then(Rules.ID)
                 .Then(Token(Colon))
                 .Then(Rules.TypeName)
-                //todo const value
-                .CollectBy(nodes => new ConstDefinitionNode(nodes[1] as IdNode, nodes[3] as IdNode)));
+                .Then(Token(Set))
+                .Then(Rules.Expression)
+                .CollectBy(nodes => new ConstDefinitionNode(nodes[1] as IdNode, nodes[3] as IdNode, nodes[5])))
+            .With(Chain.StartWith(Token(Const))
+                .Then(Rules.ID)
+                .Then(Token(Colon))
+                .Then(Rules.TypeName)
+                .CollectBy(nodes => new ConstDefinitionNode(nodes[1] as IdNode, nodes[3] as IdNode, null)));
 
         public static IRule ModuleObject = Rule.Named(nameof(ModuleObject))
             .With(Chain.StartWith(ClassDefinition)
@@ -69,12 +151,13 @@ namespace CatImplementations.ast.rules
                 .CollectBy(IdentityCollector));
 
         public static IRule PrefixedModuleObject = Rule.Named(nameof(ModuleObject))
-            .With(Chain.StartWith(Token(Export))
+            .With(Chain.StartWith(AccessModifier)
                 .Then(ModuleObject)
                 .CollectBy(nodes =>
                 {
+                    var accessModifier = AccessModifiersHelper.FromString(((TokenNode) nodes[0]).Token.Value);
                     var node = (IModuleObjectNode) nodes[1];
-                    node.SetExported(true);
+                    node.SetAccessModifier(accessModifier);
                     return node;
                 }))
             .With(Chain.StartWith(ModuleObject)
@@ -85,9 +168,8 @@ namespace CatImplementations.ast.rules
                 .Then(_)
                 .CollectBy(nodes => new ModuleObjectListNode(nodes)))
             .With(Chain.StartWith(PrefixedModuleObject)
-                .CollectBy(IdentityCollector));
-
-
+                .CollectBy(nodes => new ModuleObjectListNode(nodes)));
+        
         public static IRule Module = Rule.Named(nameof(Module))
             .With(Chain.StartWith(ModuleDeclaration)
                 .Then(ModuleImports)

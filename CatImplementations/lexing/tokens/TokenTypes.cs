@@ -72,10 +72,12 @@ namespace CatImplementations.lexing.tokens
         public static readonly ITokenType Module = new KeyWordTokenType("module");
         public static readonly ITokenType Function = new KeyWordTokenType("function");
         public static readonly ITokenType Import = new KeyWordTokenType("import");
-        public static readonly ITokenType Export = new KeyWordTokenType("export");
         public static readonly ITokenType Return = new KeyWordTokenType("return");
         public static readonly ITokenType Class = new KeyWordTokenType("class");
-        public static readonly ITokenType Const = new KeyWordTokenType("const"); //may be removed
+        public static readonly ITokenType Constructor = new KeyWordTokenType("constructor");
+        public static readonly ITokenType Const = new KeyWordTokenType("const");
+        public static readonly ITokenType Public = new KeyWordTokenType("public");
+        public static readonly ITokenType Private = new KeyWordTokenType("private");
 
         #endregion
 

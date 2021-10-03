@@ -13,9 +13,14 @@ namespace CatImplementations.ast.nodes.arithmetics
     {
         public static List<INode> Flatten(INode[] arr)
         {
-            return arr.Length == 1
-                ? new List<INode>() { arr[0] }
-                : arr.SelectMany(n => Flatten(n is CompositeRule.NodeList nl ? nl.Nodes : new[] { n })).ToList();
+            var l = new List<INode> { arr[0] };
+            if (arr.Length == 1)
+                return l;
+            if (arr[1] is NodeList nl)
+                l.AddRange(Flatten(nl.Nodes));
+            else
+                l.Add(arr[1]);
+            return l;
         }
 
         private static readonly HashSet<ITokenType> UnaryOperations = new() { Tilda, Minus, Plus };
@@ -40,7 +45,7 @@ namespace CatImplementations.ast.nodes.arithmetics
             {
                 if (flatTree[i] is not TokenNode tn || !UnaryOperations.Contains(tn.Token.Type) || (i != 0 &&
                     (flatTree[i - 1] is not TokenNode tn2 || !UnaryOperations.Contains(tn2.Token.Type)))) continue;
-                
+
                 var unaryOperationNode = new ArithmeticUnaryOperationNode(flatTree[i + 1], tn);
                 flatTree.RemoveRange(i, 2);
                 flatTree.Insert(i, unaryOperationNode);
@@ -54,7 +59,7 @@ namespace CatImplementations.ast.nodes.arithmetics
                 if (flatTree[^1] is TokenNode tnb2 && operations.Contains(tnb2.Token.Type))
                     throw new CatMisplacedOperatorException(tnb2, false);
 
-                for (var j = 1; j < flatTree.Count-1; j++)
+                for (var j = 1; j < flatTree.Count - 1; j++)
                 {
                     if (flatTree[j] is not TokenNode tn || !operations.Contains(tn.Token.Type)) continue;
 
@@ -65,7 +70,7 @@ namespace CatImplementations.ast.nodes.arithmetics
                     j--;
                 }
             }
-            
+
             return flatTree.Single();
         }
     }
