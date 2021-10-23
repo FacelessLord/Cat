@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CatCollections;
+using CatApi.utils;
 using FluentAssertions;
 using NUnit.Framework;
 

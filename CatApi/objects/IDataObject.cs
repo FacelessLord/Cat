@@ -6,7 +6,7 @@ namespace CatApi.objects
     public interface IDataObject
     {
         public Dictionary<string, IDataObject> Properties { get; }
-        public IDataType Type { get; }
+        public TypeBox Type { get; }
         public IDataObject GetProperty(string name);
         public bool HasProperty(string name);
         public void SetProperty(string name, IDataObject value);

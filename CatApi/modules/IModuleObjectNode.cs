@@ -1,5 +1,4 @@
 using CatApi.interpreting;
-using CatImplementations.ast;
 
 namespace CatApi.modules
 {

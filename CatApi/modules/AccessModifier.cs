@@ -1,6 +1,6 @@
 using System;
 
-namespace CatImplementations.ast
+namespace CatApi.modules
 {
     public enum AccessModifier
     {

@@ -37,9 +37,13 @@ namespace CatDi.di
 
         public static Factory CreateFactoryFor<T>([MaybeNull] string name)
         {
+            return CreateFactoryFor(typeof(T), name);
+        }
+
+        public static Factory CreateFactoryFor(Type type, [MaybeNull] string name)
+        {
             return new Factory(resolver =>
             {
-                var type = typeof(T);
                 var ctors = type.GetConstructors();
                 if (ctors.Length == 0)
                 {
@@ -62,11 +66,15 @@ namespace CatDi.di
             }, name);
         }
 
-        public static IFactory CreateSingletonFactoryFor<T>([MaybeNull] string name)
+        public static SingletonFactory CreateSingletonFactoryFor<T>([MaybeNull] string name)
+        {
+            return CreateSingletonFactoryFor(typeof(T), name);
+        }
+
+        public static SingletonFactory CreateSingletonFactoryFor(Type type, [MaybeNull] string name)
         {
             return new SingletonFactory(kernel =>
             {
-                var type = typeof(T);
                 var ctors = type.GetConstructors();
                 switch (ctors.Length)
                 {

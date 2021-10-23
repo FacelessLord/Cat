@@ -1,8 +1,7 @@
-﻿using CatApi.types;
-using CatImplementations.objects.primitives;
-using CatImplementations.typings;
-using CatImplementations.typings.primitives;
-using FluentAssertions;
+﻿using CatApi.bindings;
+using CatApi.types;
+using CatApi.types.containers;
+using CatDi.di;
 using NUnit.Framework;
 
 namespace CatTests
@@ -10,20 +9,19 @@ namespace CatTests
     [TestFixture]
     public class Objects
     {
-        public ITypeStorage TypeStorage;
+        public TypeStorage TypeStorage;
+        public Kernel Kernel;
+
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            Kernel = Main.CreateTestKernel();
+        }
 
         [SetUp]
         public void SetUp()
         {
-            TypeStorage = new TypeStorage();
-        }
-
-        [Test]
-        public void Creates_Object_FromType()
-        {
-            var objectType = TypeStorage[Primitives.Object];
-            var obj = objectType.CreateInstance();
-            obj.Should().BeOfType<DataObject>();
+            TypeStorage = Kernel.Resolve<TypeStorage>();
         }
     }
 }

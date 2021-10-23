@@ -16,8 +16,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CatApi\CatApi.csproj" />
-      <ProjectReference Include="..\CatAst\CatAst.csproj" />
-      <ProjectReference Include="..\CatImplementations\CatImplementations.csproj" />
     </ItemGroup>
 
 </Project>

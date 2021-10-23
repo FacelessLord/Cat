@@ -1,9 +1,11 @@
-﻿namespace CatApi.types
+﻿using CatApi.types.dataTypes;
+
+namespace CatApi.types
 {
     public interface ITypable
     {
-        public IDataType Type { get; }
+        public IDataType DataType { get; }
 
-        public void AssignType(IDataType type);
+        public void AssignType(IDataType typeBox);
     }
 }

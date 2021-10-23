@@ -5,11 +5,9 @@ using CatApi.interpreting;
 using CatApi.lexing;
 using CatApi.logger;
 using CatApi.types;
+using CatApi.types.containers;
+using CatApi.types.dataTypes;
 using CatDi.di;
-using CatImplementations.interpreting;
-using CatImplementations.lexing;
-using CatImplementations.logging;
-using CatImplementations.typings;
 
 namespace Cat
 {
@@ -39,7 +37,7 @@ namespace Cat
             var kernel = new Kernel();
 
             kernel.Register<Logger>().AsSingleton<ILogger>();
-            kernel.Register<TypeStorage>().AsSingleton<ITypeStorage>();
+            kernel.Register<TypeStorage>().AsSingleton<TypeStorage>();
             kernel.Register<TypingsInterpreter>().As<IInterpreter<IDataType>>();
             kernel.Register<ArithmeticExpressionTypingsInterpreter>().As<ArithmeticExpressionTypingsInterpreter>();
             kernel.Register<Lexer>().As<ILexer>();

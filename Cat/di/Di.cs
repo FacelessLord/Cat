@@ -1,8 +1,7 @@
 ﻿using CatApi.lexing;
 using CatApi.types;
+using CatApi.types.containers;
 using CatDi.di;
-using CatImplementations.lexing;
-using CatImplementations.typings;
 
 namespace Cat.di
 {
@@ -24,7 +23,7 @@ namespace Cat.di
         {
             _instance = new Kernel();
 
-            _instance.Register<TypeStorage>().AsSingleton<ITypeStorage>();
+            _instance.Register<TypeStorage>().AsSingleton<TypeStorage>();
             _instance.Register<Lexer>().AsSingleton<ILexer>();
             // _instance.Register<AstBuilder>().AsSingleton<IParser>();
 

@@ -5,7 +5,7 @@ namespace CatApi.structures
 {
     public interface IDataProperty
     {
-        public IDataType Type { get; }
+        public TypeBox DataType { get; }
         public string Name { get; }
         public int AccessRights { get; }
         public IDataObject GetValue(IDataObject owner);

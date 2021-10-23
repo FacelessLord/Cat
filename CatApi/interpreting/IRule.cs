@@ -1,5 +1,5 @@
 ﻿using CatApi.lexing;
-using CatCollections;
+using CatApi.utils;
 
 namespace CatApi.interpreting
 {

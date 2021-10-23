@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using CatDi.di.exceptions;
 
 namespace CatDi.di
@@ -34,7 +35,7 @@ namespace CatDi.di
         {
             if (!Factories.ContainsKey(t))
                 throw new CatTypeNotRegisteredException(t);
-            
+
             return Factories[t].First().Create(resolver);
         }
 
@@ -55,6 +56,21 @@ namespace CatDi.di
         public KernelGeneratorConfig<T> Register<T>(Func<Resolver, T> func)
         {
             return new(this, func);
+        }
+
+        public IEnumerable<T> ResolveAll<T>()
+        {
+            var resolver = new Resolver(this);
+            return Factories[typeof(T)].Select(f => f.Create(resolver)).Cast<T>();
+        }
+
+        public IEnumerable<T> FindAll<T>()
+        {
+            var resolver = new Resolver(this);
+            return Assembly.GetAssembly(typeof(T))
+                ?.GetTypes()
+                .Where(t => t.IsSubclassOf(typeof(T)) && t.IsSealed)
+                .Select(f => Factory.CreateFactoryFor(f, null).Create(resolver)).Cast<T>();
         }
     }
 }

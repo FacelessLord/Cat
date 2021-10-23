@@ -40,6 +40,11 @@ namespace CatDi.di
             return (T) Resolve(type, null);
         }
 
+        public IEnumerable<T> FindAll<T>()
+        {
+            return _kernel.FindAll<T>();
+        }
+
         public T Resolve<T>(string name)
         {
             var type = typeof(T);
